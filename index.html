@@ -418,6 +418,23 @@
     </div>
 
     <script>
+      // 注册 Service Worker
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker
+            .register("/sw.js")
+            .then((registration) => {
+              console.log(
+                "Service Worker 注册成功，作用域：",
+                registration.scope
+              );
+            })
+            .catch((error) => {
+              console.error("Service Worker 注册失败：", error);
+            });
+        });
+      }
+
       document.addEventListener("DOMContentLoaded", () => {
         // Variables for sidebar elements
         const openSidebarButton = document.getElementById(
@@ -451,7 +468,7 @@
         };
 
         // Event listeners for open and close buttons
-        openSidebarButton.addEventListener("click", openSidebar);
+        // openSidebarButton.addEventListener("click", openSidebar);
         closeSidebarButton.addEventListener("click", closeSidebar);
         offCanvasBackdrop.addEventListener("click", closeSidebar); // Close sidebar when clicking on the backdrop
       });
@@ -535,23 +552,39 @@
       // Create bookmark card element
       function createCard(title, url, icon) {
         const card = document.createElement("div");
+        const urlObj = new URL(url);
+
         card.className =
-          "cursor-pointer flex items-center hover:shadow-sm transition-shadow p-4 bg-white shadow-sm ring-1 ring-gray-900/5 dark:pintree-ring-gray-800 rounded-lg hover:bg-gray-100 dark:pintree-bg-gray-900 dark:hover:pintree-bg-gray-800";
+          "cursor-pointer flex items-center hover:shadow-sm transition-shadow p-4 bg-white shadow-sm ring-1 ring-gray-900/5 dark:pintree-ring-gray-800 rounded-lg hover:bg-gray-100 dark:pintree-bg-gray-900 dark:hover:pintree-bg-gray-800 group";
         card.onclick = () => window.open(url, "_blank"); // Make the whole card clickable
 
         const cardIcon = document.createElement("img");
         cardIcon.src = icon || "assets/default-icon.svg"; // Use provided icon or default icon
+
+        // 创建一个新的Image对象来预加载远程图标
+        const remoteIcon = new Image();
+        remoteIcon.onload = function () {
+          cardIcon.src = this.src; // 远程图标加载成功后替换
+        };
+        remoteIcon.onerror = function () {
+          // 如果远程图标加载失败，保持默认图标
+          if (!icon) {
+            cardIcon.src = "assets/default-icon.svg";
+          }
+        };
+        remoteIcon.src = `https://favicon.im/${urlObj.hostname}`; // 开始加载远程图标
+        //remoteIcon.src = `https://www.google.com/s2/favicons?domain=${urlObj.hostname}&sz=128`;
+
         cardIcon.alt = title;
         cardIcon.className =
           "w-8 h-8 mr-4 rounded-full flex-shrink-0 card-icon-bg"; // Smaller size and rounded
-
         // Check if the image URL returns 404 and replace it with the default icon if it does
         cardIcon.onerror = () => {
           cardIcon.src = "assets/default-icon.svg";
         };
 
         const cardContent = document.createElement("div");
-        cardContent.className = "flex flex-col overflow-hidden"; // Ensure the content is hidden if too long
+        cardContent.className = "flex flex-col overflow-hidden flex-1"; // Ensure the content is hidden if too long
 
         const cardTitle = document.createElement("h2");
         cardTitle.className =
@@ -568,9 +601,36 @@
 
         cardContent.appendChild(cardTitle);
         cardContent.appendChild(cardUrl); // Add URL paragraph
+        // 添加复制按钮
+        const copyButton = document.createElement("button");
+        copyButton.className =
+          "opacity-0 group-hover:opacity-100 ml-2 p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 cursor-pointer";
+        copyButton.innerHTML = `
+          <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+          </svg>`;
+
+        copyButton.onclick = (e) => {
+          e.stopPropagation(); // 阻止事件冒泡，避免触发卡片的点击事件
+          navigator.clipboard.writeText(url).then(() => {
+            // 复制成功后显示成功图标
+            copyButton.innerHTML = `
+              <svg class="h-4 w-4 text-green-500" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+              </svg>`;
+            // 1秒后恢复原始图标
+            setTimeout(() => {
+              copyButton.innerHTML = `
+                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>`;
+            }, 1000);
+          });
+        };
 
         card.appendChild(cardIcon);
         card.appendChild(cardContent);
+        card.appendChild(copyButton);
 
         return card;
       }
@@ -588,7 +648,7 @@
 
         const cardIcon = document.createElement("div");
         cardIcon.innerHTML = `
-        <svg viewBox="0 0 100 80" class="folder__svg">
+        <svg viewBox="0 0 100 80" class="folder__svg rounded-lg">
           <rect x="0" y="0" rx="10" ry="10" width="100" height="80" class="folder__back" />
           <rect x="15" y="8" rx="10" ry="10" width="70" height="60" class="paper-1" />
           <rect x="10" y="18" rx="10" ry="10" width="80" height="50" class="paper-2" />
@@ -991,15 +1051,15 @@
           applyColorTheme(event.matches ? "dark" : "light");
         });
 
-      // Open mobile menu
-      document
-        .getElementById("open-sidebar-button")
-        .addEventListener("click", function () {
-          var navigation = document
-            .getElementById("navigation")
-            .cloneNode(true);
-          document.getElementById("sidebar-2").appendChild(navigation);
-        });
+      //// Open mobile menu
+      //document
+      //  .getElementById("open-sidebar-button")
+      //  .addEventListener("click", function () {
+      //    var navigation = document
+      //      .getElementById("navigation")
+      //      .cloneNode(true);
+      //    document.getElementById("sidebar-2").appendChild(navigation);
+      //  });
     </script>
 
     <script>
