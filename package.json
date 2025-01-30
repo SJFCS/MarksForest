@@ -4,20 +4,21 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build:css": "tailwindcss build ./css/styles.css -o ./css/tailwind.css",
-    "watch:css": "nodemon -e html,css,js -x \"npm run build:css\"",
-    "dev": "concurrently \"npm run watch:css\""
+    "build:css": "tailwindcss -i ./css/tailwind.css -o ./css/styles.css -m",
+    "watch:css": "tailwindcss -i ./css/tailwind.css -o ./css/styles.css -m --watch",
+    "serve": "browser-sync start --server --files '*.html, css/styles.css, js/*.js'",
+    "dev": "concurrently \"npm run watch:css\" \"npm run serve\"",
+    "deps:check": "npx npm-check -u"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@tailwindcss/forms": "^0.5.7",
-    "tailwindcss": "^3.4.4",
-    "theme-change": "^2.5.0"
+    "@tailwindcss/cli": "^4.0.1",
+    "tailwindcss": "^4.0.1"
   },
   "devDependencies": {
-    "concurrently": "^8.2.2",
-    "nodemon": "^3.1.3"
+    "browser-sync": "^3.0.3",
+    "concurrently": "^9.1.2"
   }
 }
