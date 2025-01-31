@@ -623,6 +623,22 @@
           const newPath = path.concat({ title, children });
           renderBookmarks(children, newPath);
           updateSidebarActiveState(newPath); // Update sidebar active state
+
+          // 找到并展开对应的侧边栏项目
+          const navItem = Array.from(
+            document.querySelectorAll("#navigation li")
+          ).find((item) => item.querySelector("a")?.innerText === title);
+          if (navItem) {
+            const subList = navItem.nextElementSibling;
+            const toggleIcon = navItem.querySelector(".transform");
+            if (subList && subList.tagName === "UL") {
+              subList.classList.remove("hidden");
+              // 只有在子列表有内容时才旋转箭头
+              if (toggleIcon && subList.children.length > 0) {
+                toggleIcon.classList.add("rotate-90");
+              }
+            }
+          }
         };
 
         const cardIcon = document.createElement("div");
@@ -785,9 +801,10 @@
                 navItem.classList.add("sidebar-active");
               }
 
+              // 展开子列表
               if (index < path.length - 1) {
-                const subList = navItem.querySelector("ul");
-                if (subList) {
+                const subList = navItem.nextElementSibling;
+                if (subList && subList.tagName === "UL") {
                   subList.classList.remove("hidden");
                   currentNav = subList;
                 }
