@@ -148,6 +148,11 @@
             </div>
           </div>
         </div>
+        <!-- Resize Handle -->
+        <div
+          id="resize-handle"
+          class="absolute right-0 top-0 bottom-0 w-2 translate-x-1/2 cursor-col-resize z-100 hover:bg-black/10 dark:hover:bg-white/10"
+        ></div>
       </div>
 
       <!-- Main Content Area -->
@@ -795,9 +800,11 @@
         if (folders.length > 0) {
           const folderSection = document.createElement("div");
           folderSection.className =
-            "grid grid-cols-3 sm:grid-cols-6 lg:grid-cols-8 2xl:grid-cols-12 gap-6";
+            "grid grid-cols-[repeat(auto-fill,minmax(7rem,1fr))] gap-4 justify-start px-4";
           folders.forEach((folder) => {
             const card = createFolderCard(folder.title, folder.children, path);
+            //card.className =
+            //  "w-[120px] flex flex-col items-center bg-white/5 rounded hover:bg-white/10 hover:-translate-y-1 hover:shadow-lg transition-all cursor-pointer p-2";
             folderSection.appendChild(card);
           });
           container.appendChild(folderSection);
@@ -978,6 +985,148 @@
       //      .cloneNode(true);
       //    document.getElementById("sidebar-2").appendChild(navigation);
       //  });
+
+      // Draggable sidebar functionality
+      document.addEventListener("DOMContentLoaded", function () {
+        const handle = document.getElementById("resize-handle");
+        const sidebar = document.querySelector(".lg\\:fixed");
+        const mainContent = document.querySelector(".lg\\:pl-60");
+        let isResizing = false;
+        const MIN_WIDTH = 200;
+        const MAX_WIDTH = 400;
+        const DEFAULT_WIDTH = 240;
+
+        // 检查是否为桌面模式
+        const isDesktopMode = () => window.innerWidth >= 1024;
+
+        // 添加过渡样式
+        const addTransition = () => {
+          sidebar.style.transition = "width 0.2s ease";
+          mainContent.style.transition = "padding-left 0.2s ease";
+        };
+
+        // 移除过渡样式
+        const removeTransition = () => {
+          sidebar.style.transition = "none";
+          mainContent.style.transition = "none";
+        };
+
+        // 重置为默认状态
+        const resetToDefault = () => {
+          removeTransition();
+          requestAnimationFrame(() => {
+            sidebar.style.removeProperty("width");
+            mainContent.style.removeProperty("padding-left");
+            sidebar.classList.add("lg:w-60");
+            requestAnimationFrame(() => {
+              addTransition();
+            });
+          });
+        };
+
+        // 设置自定义宽度
+        const setCustomWidth = (width, withTransition = true) => {
+          if (width >= MIN_WIDTH && width <= MAX_WIDTH) {
+            if (!withTransition) removeTransition();
+            requestAnimationFrame(() => {
+              sidebar.classList.remove("lg:w-60");
+              sidebar.style.width = `${width}px`;
+              mainContent.style.paddingLeft = `${width}px`;
+              if (!withTransition) {
+                requestAnimationFrame(() => {
+                  addTransition();
+                });
+              }
+              if (isDesktopMode()) {
+                localStorage.setItem("sidebarWidth", width);
+              }
+            });
+          }
+        };
+
+        // 恢复保存的宽度
+        const restoreSavedWidth = (withTransition = true) => {
+          const savedWidth = localStorage.getItem("sidebarWidth");
+          if (savedWidth) {
+            const width = parseInt(savedWidth);
+            if (width >= MIN_WIDTH && width <= MAX_WIDTH) {
+              setCustomWidth(width, withTransition);
+            } else {
+              resetToDefault();
+            }
+          } else {
+            resetToDefault();
+          }
+        };
+
+        if (handle && sidebar && mainContent) {
+          // 初始化
+          if (isDesktopMode()) {
+            restoreSavedWidth(false);
+          }
+
+          // 处理鼠标拖动
+          handle.addEventListener("mousedown", function (e) {
+            if (!isDesktopMode()) return;
+            e.preventDefault();
+            isResizing = true;
+            removeTransition();
+            document.body.classList.add("resizing");
+
+            const onMouseMove = (e) => {
+              if (!isResizing) return;
+              requestAnimationFrame(() => {
+                const newWidth = Math.min(
+                  Math.max(e.clientX, MIN_WIDTH),
+                  MAX_WIDTH
+                );
+                setCustomWidth(newWidth, false);
+              });
+            };
+
+            const onMouseUp = () => {
+              isResizing = false;
+              document.body.classList.remove("resizing");
+              addTransition();
+              document.removeEventListener("mousemove", onMouseMove);
+              document.removeEventListener("mouseup", onMouseUp);
+            };
+
+            document.addEventListener("mousemove", onMouseMove);
+            document.addEventListener("mouseup", onMouseUp);
+          });
+
+          // 处理窗口大小变化
+          let lastWidth = window.innerWidth;
+          let resizeRAF;
+
+          window.addEventListener("resize", () => {
+            if (resizeRAF) {
+              cancelAnimationFrame(resizeRAF);
+            }
+
+            resizeRAF = requestAnimationFrame(() => {
+              const currentWidth = window.innerWidth;
+              const crossingBreakpoint =
+                (lastWidth < 1024 && currentWidth >= 1024) ||
+                (lastWidth >= 1024 && currentWidth < 1024);
+
+              if (crossingBreakpoint) {
+                if (currentWidth >= 1024) {
+                  restoreSavedWidth(true);
+                } else {
+                  resetToDefault();
+                }
+              }
+
+              lastWidth = currentWidth;
+            });
+          });
+
+          // 添加初始过渡效果
+          addTransition();
+        }
+      });
     </script>
 
     <script>
