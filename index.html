@@ -41,6 +41,7 @@
 
     <!-- Stylesheet -->
     <link rel="stylesheet" href="css/styles.css" />
+    <link rel="stylesheet" href="css/scrollbar.css" />
 
     <!-- Structured Data for SEO -->
     <script type="application/ld+json">
@@ -57,69 +58,82 @@
         }
       }
     </script>
+    <style>
+      @keyframes highlight-border {
+        0%,
+        100% {
+          box-shadow: 0 0 0 2px transparent;
+          transform: scale(1);
+        }
+        50% {
+          box-shadow: 0 0 0 2px rgb(34, 197, 94);
+          transform: scale(1.02);
+        }
+      }
+      .highlight-border {
+        animation: highlight-border 0.7s ease-in-out 3;
+      }
+    </style>
   </head>
 
   <body class="h-full dark:marksforest-bg-gray-900 bg-white">
     <div>
       <!-- Mobile Off-Canvas Menu -->
-      <div
-        id="off-canvas-menu"
-        class="relative z-50 lg:hidden hidden"
-        role="dialog"
-        aria-modal="true"
-      >
+      <div id="off-canvas-menu" class="fixed inset-0 z-[100] lg:hidden hidden">
+        <!-- Background backdrop -->
         <div
           id="off-canvas-backdrop"
-          class="fixed inset-0 bg-gray-900/80 opacity-0 transition-opacity ease-linear duration-300"
+          class="fixed inset-0 transition-opacity duration-300 ease-in-out opacity-0 bg-transparent"
         ></div>
-        <div class="fixed inset-0 flex">
-          <div
-            id="off-canvas-content"
-            class="relative mr-16 flex w-full max-w-xs flex-1 -translate-x-full transition ease-in-out duration-300 transform"
-          >
-            <!-- Close button for the off-canvas menu -->
-            <div class="absolute left-full top-0 flex w-16 justify-center pt-5">
+
+        <!-- Sidebar container -->
+        <div
+          id="off-canvas-content"
+          class="fixed inset-y-0 left-0 z-[101] w-72 bg-white dark:marksforest-bg-gray-900 shadow-lg transform transition-transform duration-300 ease-in-out -translate-x-full overflow-y-auto"
+        >
+          <div class="h-full flex flex-col">
+            <!-- Sidebar header -->
+            <div
+              class="flex h-16 shrink-0 items-center justify-between px-4 border-b border-gray-200 dark:marksforest-border-gray-800"
+            >
+              <div class="flex items-center">
+                <img
+                  class="h-8 w-auto"
+                  src="assets/logo.svg"
+                  alt="MarksForest"
+                />
+                <span
+                  class="ml-3 font-extrabold text-xl text-gray-900 dark:text-white"
+                  >MarksForest</span
+                >
+              </div>
               <button
                 id="close-sidebar-button"
-                type="button"
-                class="-m-2.5 p-2.5"
+                class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
               >
-                <span class="sr-only">Close sidebar</span>
                 <svg
-                  class="h-6 w-6 text-white"
+                  class="h-6 w-6"
                   fill="none"
                   viewBox="0 0 24 24"
-                  stroke-width="1.5"
                   stroke="currentColor"
-                  aria-hidden="true"
                 >
                   <path
                     stroke-linecap="round"
                     stroke-linejoin="round"
+                    stroke-width="2"
                     d="M6 18L18 6M6 6l12 12"
                   />
                 </svg>
               </button>
             </div>
 
-            <!-- Off-canvas Sidebar content -->
-            <div
-              class="flex grow flex-col gap-y-5 overflow-y-auto bg-white dark:marksforest-bg-gray-900 px-6 pb-4"
+            <!-- Sidebar content -->
+            <nav
+              id="mobile-navigation"
+              class="flex-1 px-2 py-4 space-y-1 overflow-y-auto bg-white dark:marksforest-bg-gray-900"
             >
-              <div class="flex h-16 shrink-0 items-center">
-                <img
-                  class="pl-2 h-8 w-auto"
-                  src="assets/logo.svg"
-                  alt="MarksForest"
-                />
-                <a href="" class="ml-4 font-extrabold text-2xl dark:text-white"
-                  >MarksForest</a
-                >
-              </div>
-              <div id="sidebar-2" class="flex flex-1 flex-col">
-                <!-- Sidebar content will be injected here -->
-              </div>
-            </div>
+              <!-- Navigation items will be rendered here -->
+            </nav>
           </div>
         </div>
       </div>
@@ -168,9 +182,33 @@
           <div
             class="h-full items-center flex flex-1 gap-x-4 self-stretch lg:gap-x-6 justify-between"
           >
-            <div class="flex lg:grow gap-x-4 justify-between">
+            <div class="flex lg:grow gap-x-4 justify-between items-center">
+              <div class="flex lg:hidden">
+                <!-- Mobile menu button -->
+                <button
+                  type="button"
+                  id="open-sidebar-button"
+                  class="inline-flex items-center justify-center rounded-md p-2.5 text-gray-700 dark:text-gray-200"
+                >
+                  <span class="sr-only">Open main menu</span>
+                  <svg
+                    class="h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
+                    />
+                  </svg>
+                </button>
+              </div>
               <img
-                class="pl-2 h-8 w-auto lg:hidden"
+                class="h-8 w-auto lg:hidden"
                 src="assets/logo.svg"
                 alt="MarksForest"
               />
@@ -179,10 +217,10 @@
               >
                 <button
                   id="searchButton"
-                  class="absolute h-full text-gray-400 rounded"
+                  class="absolute h-full text-gray-400 rounded cursor-pointer w-8 flex items-center"
                 >
                   <svg
-                    class="pointer-events-none absolute inset-y-0 left-0 h-full w-5 text-gray-400"
+                    class="h-5 w-5"
                     viewBox="0 0 20 20"
                     fill="currentColor"
                     aria-hidden="true"
@@ -261,9 +299,9 @@
           </div>
           <div
             id="breadcrumbs"
-            class="mt-2 px-6 text-sm text-gray-400 flex justify-between items-center"
+            class="flex items-center space-x-2 px-6 py-2 overflow-x-auto whitespace-nowrap h-8"
           >
-            <div id="breadcrumbs-path" class="">
+            <div id="breadcrumbs-path" class="flex items-center space-x-2">
               <!-- Breadcrumbs will be inserted here -->
             </div>
           </div>
@@ -281,7 +319,8 @@
               <a
                 href="https://github.com/SJFCS/MarksForest"
                 target="_blank"
-                class="text-gray-400 hover:text-gray-500"
+                class="text-gray-400 hover:text-gray-500 dark:text-gray-500 dark:hover:text-gray-400 transition-colors duration-200"
+                aria-label="Visit our GitHub repository"
               >
                 <span class="sr-only">GitHub</span>
                 <svg
@@ -346,6 +385,317 @@
     </div>
 
     <script>
+      // 清除导航栏的激活状态
+      function clearNavigationActiveState() {
+        document
+          .querySelectorAll(
+            "#navigation .nav-item, #mobile-navigation .nav-item"
+          )
+          .forEach((item) => {
+            // 移除所有可能的状态类
+            const classesToRemove = [
+              // 背景
+              "bg-gray-50",
+              "bg-gray-100",
+              "dark:bg-gray-800",
+              // 文字颜色
+              "text-gray-700",
+              "dark:text-gray-400",
+              "text-green-600",
+              "dark:text-green-500",
+            ];
+            item.classList.remove(...classesToRemove);
+            // 重置为默认状态
+            item.classList.add("text-gray-700", "dark:text-gray-400");
+          });
+      }
+
+      // 全局状态管理
+      const state = {
+        currentPath: [], // 当前路径，格式：[{title, children}]
+        expandedFolders: new Set(), // 展开的文件夹集合
+        bookmarkData: null, // 书签数据
+
+        // 更新当前路径
+        updatePath(path) {
+          this.currentPath = path;
+
+          // 展开路径上的所有文件夹
+          let currentFolderId = "";
+          for (const segment of path) {
+            currentFolderId = currentFolderId
+              ? currentFolderId + "/" + segment.title
+              : segment.title;
+            this.expandFolder(currentFolderId);
+          }
+
+          this.syncWithUrl(path);
+          uiManager.updateAll(path);
+        },
+
+        // 获取当前路径
+        getCurrentPath() {
+          return this.currentPath;
+        },
+
+        // 展开文件夹
+        expandFolder(folderId) {
+          this.expandedFolders.add(folderId);
+          uiManager.updateFolderState(folderId, true);
+        },
+
+        // 收起文件夹
+        collapseFolder(folderId) {
+          this.expandedFolders.delete(folderId);
+          uiManager.updateFolderState(folderId, false);
+        },
+
+        // 切换文件夹展开状态
+        toggleFolder(folderId) {
+          if (this.isFolderExpanded(folderId)) {
+            this.collapseFolder(folderId);
+          } else {
+            this.expandFolder(folderId);
+          }
+        },
+
+        // 检查文件夹是否展开
+        isFolderExpanded(folderId) {
+          return this.expandedFolders.has(folderId);
+        },
+
+        // 展开路径上的所有文件夹
+        expandPath(path) {
+          let currentPath = [];
+          for (const segment of path) {
+            currentPath.push(segment);
+            const folderId = currentPath.map((p) => p.title).join("/");
+            if (!this.isFolderExpanded(folderId)) {
+              this.expandFolder(folderId);
+            }
+          }
+        },
+
+        // 与 URL 同步
+        syncWithUrl(path) {
+          const url = this.pathToUrl(path);
+          window.history.pushState({ path }, "", url);
+        },
+
+        // 路径转 URL
+        pathToUrl(path) {
+          if (!path || path.length === 0) return "#";
+          return "#/" + path.map((p) => encodeURIComponent(p.title)).join("/");
+        },
+
+        // URL 转路径
+        urlToPath(url) {
+          // 移除开头的 # 和 /
+          return url
+            .replace(/^#\/?/, "")
+            .split("/")
+            .filter(Boolean)
+            .map(decodeURIComponent);
+        },
+
+        // 通过路径获取文件夹内容
+        getFolderByPath(path) {
+          let current = this.bookmarkData;
+          for (const segment of path) {
+            const folder = current.find(
+              (item) => item.type === "folder" && item.title === segment.title
+            );
+            if (!folder) return null;
+            current = folder.children;
+          }
+          return current;
+        },
+
+        // 验证路径是否有效
+        validatePath(urlPath) {
+          try {
+            let current = this.bookmarkData;
+            const validPath = [];
+            let currentFolderId = "";
+
+            for (const segment of urlPath) {
+              const found = current.find(
+                (item) => item.type === "folder" && item.title === segment
+              );
+              if (!found) return null;
+
+              // 构建并展开当前文件夹
+              currentFolderId = currentFolderId
+                ? currentFolderId + "/" + found.title
+                : found.title;
+              this.expandFolder(currentFolderId);
+
+              validPath.push({ title: found.title, children: found.children });
+              current = found.children;
+            }
+
+            return validPath;
+          } catch (err) {
+            console.error("Error validating path:", err);
+            return null;
+          }
+        },
+
+        // 初始化第一个文件夹
+        initializeFirstFolder() {
+          if (this.bookmarkData && this.bookmarkData.length > 0) {
+            const firstFolder = this.bookmarkData.find(
+              (item) => item.type === "folder"
+            );
+            if (firstFolder) {
+              const path = [
+                { title: firstFolder.title, children: firstFolder.children },
+              ];
+              this.updatePath(path);
+              this.expandFolder(firstFolder.title);
+              return;
+            }
+          }
+          this.updatePath([]);
+        },
+      };
+
+      // UI更新管理器
+      const uiManager = {
+        // 统一更新所有 UI 组件
+        updateAll(path) {
+          this.updateBreadcrumbs(path);
+          this.updateSidebarState(path);
+          const bookmarks =
+            path.length > 0
+              ? path[path.length - 1].children
+              : state.bookmarkData;
+          this.updateBookmarks(bookmarks, path);
+        },
+
+        // 更新面包屑导航
+        updateBreadcrumbs(path) {
+          renderBreadcrumbs(path);
+        },
+
+        // 更新侧边栏状态
+        updateSidebarState(path) {
+          // 清除所有活跃状态
+          document
+            .querySelectorAll("#navigation .sidebar-active")
+            .forEach((el) => el.classList.remove("sidebar-active"));
+
+          // 设置新的活跃状态
+          if (path.length > 0) {
+            const currentFolder = path[path.length - 1].title;
+            const sidebarItems = document.querySelectorAll("#navigation li a");
+            sidebarItems.forEach((item) => {
+              if (item.innerText === currentFolder) {
+                item.parentElement.classList.add("sidebar-active");
+              }
+            });
+          }
+        },
+
+        // 更新文件夹展开状态
+        updateFolderState(folderId, isExpanded) {
+          const folderPath = folderId.split("/");
+
+          // 处理桌面端
+          this.updateFolderStateInElement(
+            document.getElementById("navigation"),
+            folderPath,
+            folderId,
+            isExpanded
+          );
+
+          // 处理移动端
+          this.updateFolderStateInElement(
+            document.getElementById("mobile-navigation"),
+            folderPath,
+            folderId,
+            isExpanded
+          );
+        },
+
+        updateFolderStateInElement(element, folderPath, folderId, isExpanded) {
+          if (!element) {
+            console.log("Element not found");
+            return;
+          }
+
+          clearNavigationActiveState();
+
+          let currentElement = element;
+          let currentPath = [];
+          const lastSegment = folderPath[folderPath.length - 1];
+
+          for (const segment of folderPath) {
+            currentPath.push(segment);
+            const currentId = currentPath.join("/");
+            const folderElements = currentElement.querySelectorAll("li");
+
+            for (const li of folderElements) {
+              const titleElements = li.querySelectorAll("a, span");
+
+              for (const titleElement of titleElements) {
+                const text = titleElement.textContent.trim();
+                if (text === segment) {
+                  // 只为最后一个文件夹添加激活样式
+                  if (segment === lastSegment) {
+                    const navItem = li.closest(".nav-item");
+                    if (navItem) {
+                      // 移除默认文字颜色
+                      navItem.classList.remove(
+                        "text-gray-700",
+                        "dark:text-gray-400"
+                      );
+                      // 添加激活样式
+                      navItem.classList.add(
+                        "bg-gray-50",
+                        "dark:bg-gray-800",
+                        "text-green-600",
+                        "dark:text-green-500"
+                      );
+                    }
+                  }
+
+                  const parentLi = li.closest("li");
+                  const subList = parentLi.nextElementSibling;
+                  const toggleIcon = li.querySelector(".transform");
+
+                  if (subList && subList.tagName === "UL") {
+                    // 只有当完全匹配目标文件夹时才更新状态
+                    if (currentId === folderId) {
+                      if (isExpanded) {
+                        subList.classList.remove("hidden");
+                        // 只有当有子文件夹时才旋转箭头
+                        if (toggleIcon && subList.children.length > 0) {
+                          toggleIcon.classList.add("rotate-90");
+                        }
+                      } else {
+                        subList.classList.add("hidden");
+                        // 只有当有子文件夹时才取消旋转箭头
+                        if (toggleIcon && subList.children.length > 0) {
+                          toggleIcon.classList.remove("rotate-90");
+                        }
+                      }
+                    }
+                    currentElement = subList;
+                    break;
+                  }
+                }
+              }
+            }
+          }
+        },
+
+        // 更新书签内容
+        updateBookmarks(bookmarks, path) {
+          renderBookmarks(bookmarks, path);
+        },
+      };
+
       // 注册 Service Worker
       if ("serviceWorker" in navigator) {
         window.addEventListener("load", () => {
@@ -363,215 +713,380 @@
         });
       }
 
-      document.addEventListener("DOMContentLoaded", () => {
-        // Variables for sidebar elements
-        const openSidebarButton = document.getElementById(
-          "open-sidebar-button"
-        );
-        const closeSidebarButton = document.getElementById(
-          "close-sidebar-button"
-        );
+      // 移除重复的fetch调用，只在DOMContentLoaded中加载数据
+      document.addEventListener("DOMContentLoaded", async () => {
+        try {
+          // 显示加载动画
+          const loadingSpinner = document.getElementById("loading-spinner");
+          loadingSpinner.style.display = "flex";
+
+          // 加载数据
+          const response = await fetch("json/marksforest.json");
+          const data = await response.json();
+
+          // 保存数据到全局状态
+          state.bookmarkData = data;
+
+          // 渲染导航
+          const navigationContainer = document.getElementById("navigation");
+          renderNavigation(data, navigationContainer, true);
+
+          // 处理初始路径
+          const urlPath = state.urlToPath(window.location.hash);
+          if (urlPath.length > 0) {
+            const validPath = state.validatePath(urlPath);
+            if (validPath) {
+              state.updatePath(validPath);
+            } else {
+              state.initializeFirstFolder();
+            }
+          } else {
+            state.initializeFirstFolder();
+          }
+
+          // 初始化其他功能
+          initializeSearch();
+          initializeTheme();
+          initializeSidebar();
+
+          // 隐藏加载动画
+          loadingSpinner.style.display = "none";
+        } catch (error) {
+          console.error("Failed to initialize application:", error);
+          const loadingSpinner = document.getElementById("loading-spinner");
+          loadingSpinner.innerHTML =
+            '<div class="text-red-500">Failed to load data. Please try refreshing the page.</div>';
+        }
+      });
+
+      // 监听 hash 变化事件
+      window.addEventListener("hashchange", () => {
+        const urlPath = state.urlToPath(window.location.hash);
+        const validPath = state.validatePath(urlPath);
+        if (validPath) {
+          state.updatePath(validPath);
+        } else {
+          state.initializeFirstFolder();
+        }
+      });
+
+      // 初始化搜索功能
+      function initializeSearch() {
+        // Search functionality on pressing Enter
+        document
+          .getElementById("searchInput")
+          .addEventListener("keydown", function (event) {
+            if (event.key === "Enter") {
+              const query = event.target.value;
+              searchBookmarks(query);
+            }
+          });
+
+        // 添加搜索按钮点击事件
+        document.getElementById("searchButton").onclick = function () {
+          const query = document.getElementById("searchInput").value;
+          searchBookmarks(query);
+        };
+      }
+
+      // 初始化主题功能
+      function initializeTheme() {
+        const prefersDarkTheme = window.matchMedia(
+          "(prefers-color-scheme: dark)"
+        ).matches;
+        if (prefersDarkTheme) {
+          applyDarkTheme();
+        } else {
+          applyLightTheme();
+        }
+      }
+
+      // 初始化侧边栏功能
+      function initializeSidebar() {
+        const sidebar = document.getElementById("sidebar");
+        const mainContent = document.getElementById("main-content");
+        const handle = document.getElementById("resize-handle");
+
+        if (handle && sidebar && mainContent) {
+          if (isDesktopMode()) {
+            restoreSavedWidth(false);
+          }
+        }
+      }
+
+      // Variables for sidebar elements
+      const openSidebarButton = document.getElementById("open-sidebar-button");
+      const closeSidebarButton = document.getElementById(
+        "close-sidebar-button"
+      );
+      const offCanvasMenu = document.getElementById("off-canvas-menu");
+      const offCanvasBackdrop = document.getElementById("off-canvas-backdrop");
+      const offCanvasContent = document.getElementById("off-canvas-content");
+
+      // Function to open the sidebar
+      const openSidebar = () => {
         const offCanvasMenu = document.getElementById("off-canvas-menu");
         const offCanvasBackdrop = document.getElementById(
           "off-canvas-backdrop"
         );
         const offCanvasContent = document.getElementById("off-canvas-content");
 
-        // Function to open the sidebar
-        const openSidebar = () => {
-          offCanvasMenu.classList.remove("hidden");
-          setTimeout(() => {
-            offCanvasBackdrop.classList.add("opacity-100");
-            offCanvasContent.classList.add("translate-x-0");
-          }, 10);
-        };
+        // Show the menu
+        offCanvasMenu.classList.remove("hidden");
 
-        // Function to close the sidebar
-        const closeSidebar = () => {
-          offCanvasBackdrop.classList.remove("opacity-100");
-          offCanvasContent.classList.remove("translate-x-0");
-          setTimeout(() => {
-            offCanvasMenu.classList.add("hidden");
-          }, 300); // Match the duration of the transition
-        };
+        // Animate backdrop and content after a small delay
+        requestAnimationFrame(() => {
+          offCanvasBackdrop.classList.remove("opacity-0");
+          offCanvasContent.classList.remove("-translate-x-full");
+        });
+      };
 
-        // Event listeners for open and close buttons
-        // openSidebarButton.addEventListener("click", openSidebar);
-        closeSidebarButton.addEventListener("click", closeSidebar);
-        offCanvasBackdrop.addEventListener("click", closeSidebar); // Close sidebar when clicking on the backdrop
-      });
+      // Function to close the sidebar
+      const closeSidebar = () => {
+        const offCanvasMenu = document.getElementById("off-canvas-menu");
+        const offCanvasBackdrop = document.getElementById(
+          "off-canvas-backdrop"
+        );
+        const offCanvasContent = document.getElementById("off-canvas-content");
+
+        // Animate backdrop and content
+        offCanvasBackdrop.classList.add("opacity-0");
+        offCanvasContent.classList.add("-translate-x-full");
+
+        // Hide the menu after animation
+        setTimeout(() => {
+          offCanvasMenu.classList.add("hidden");
+        }, 300);
+      };
+
+      // Event listeners for open and close buttons
+      openSidebarButton.addEventListener("click", openSidebar);
+      closeSidebarButton.addEventListener("click", closeSidebar);
+      offCanvasBackdrop.addEventListener("click", closeSidebar); // Close sidebar when clicking on the backdrop
 
       // Search functionality
-      function searchBookmarks(query) {
-        fetch("json/marksforest.json")
-          .then((response) => response.json())
-          .then((data) => {
-            const results = searchInData(data, query.toLowerCase());
-            renderBookmarks(results, [
-              { title: "Search Results", children: results },
-            ]);
-          })
-          .catch((error) => console.error("Error searching bookmarks:", error));
-      }
-
-      function searchInData(data, query) {
+      function searchInData(data, query, parentPath = []) {
         let results = [];
         data.forEach((item) => {
-          if (item.title.toLowerCase().includes(query)) {
-            results.push(item);
+          const currentPath = [...parentPath];
+          const itemInfo = {
+            title: item.title,
+            type: item.type,
+            children: item.children,
+          };
+          currentPath.push(itemInfo);
+
+          if (item.title.toLowerCase().includes(query.toLowerCase())) {
+            results.push({
+              ...item,
+              parentPath: currentPath.slice(0, -1), // 不包含当前项
+              fullPath: currentPath, // 包含当前项的完整路径
+            });
           }
+
           if (item.children) {
-            const childResults = searchInData(item.children, query);
-            if (childResults.length > 0) {
-              results = results.concat(childResults);
-            }
+            const childResults = searchInData(
+              item.children,
+              query,
+              currentPath
+            );
+            results = results.concat(childResults);
           }
         });
         return results;
       }
 
-      document.getElementById("searchButton").addEventListener("click", () => {
-        const query = document.getElementById("searchInput").value;
-        searchBookmarks(query);
-      });
+      function searchBookmarks(query) {
+        if (!query.trim()) {
+          const currentPath = state.getCurrentPath();
+          const currentFolder =
+            currentPath.length > 0 ? currentPath[currentPath.length - 1] : null;
+          renderBookmarks(
+            currentFolder ? currentFolder.children : state.bookmarkData,
+            currentPath
+          );
+          return;
+        }
+
+        const results = searchInData(state.bookmarkData, query.toLowerCase());
+        if (results.length === 0) {
+          showNoResultsMessage();
+          return;
+        }
+
+        renderBookmarks(results, [
+          { title: "Search Results", children: results },
+        ]);
+      }
 
       // Create bookmark card element
-      function createCard(title, url, icon) {
+      function createCard(title, url, parentPath) {
         const card = document.createElement("div");
         const urlObj = new URL(url);
 
         card.className =
-          "cursor-pointer flex items-center hover:shadow-sm transition-shadow p-4 bg-white shadow-sm ring-1 ring-gray-900/5 dark:marksforest-ring-gray-800 rounded-lg hover:bg-gray-100 dark:marksforest-bg-gray-900 dark:hover:marksforest-bg-gray-800 group";
-        card.onclick = () => window.open(url, "_blank"); // Make the whole card clickable
+          "cursor-pointer flex items-center hover:shadow-sm transition-all p-4 bg-white shadow-sm ring-1 ring-gray-900/5 dark:marksforest-ring-gray-800 rounded-lg hover:bg-gray-100 dark:marksforest-bg-gray-900 dark:hover:marksforest-bg-gray-800 group active:scale-[0.99] active:bg-gray-200 dark:active:marksforest-bg-gray-700";
+        card.setAttribute("data-url", url);
+
+        card.onclick = () => window.open(url, "_blank");
 
         const cardIcon = document.createElement("img");
-        cardIcon.src = icon || "assets/default-icon.svg"; // Use provided icon or default icon
+        cardIcon.alt = title;
+        cardIcon.className =
+          "w-8 h-8 mr-4 rounded-full flex-shrink-0 card-icon-bg";
+        cardIcon.src = "assets/default-icon.svg"; // 默认使用默认图标
 
         // 创建一个新的Image对象来预加载远程图标
         const remoteIcon = new Image();
         remoteIcon.onload = function () {
           cardIcon.src = this.src; // 远程图标加载成功后替换
         };
-        remoteIcon.onerror = function () {
-          // 如果远程图标加载失败，保持默认图标
-          if (!icon) {
-            cardIcon.src = "assets/default-icon.svg";
-          }
-        };
-        remoteIcon.src = `https://favicon.im/${urlObj.hostname}`; // 开始加载远程图标
-        //remoteIcon.src = `https://www.google.com/s2/favicons?domain=${urlObj.hostname}&sz=128`;
 
-        cardIcon.alt = title;
-        cardIcon.className =
-          "w-8 h-8 mr-4 rounded-full flex-shrink-0 card-icon-bg"; // Smaller size and rounded
-        // Check if the image URL returns 404 and replace it with the default icon if it does
-        cardIcon.onerror = () => {
+        // 尝试加载远程图标
+        //remoteIcon.src = `https://favicon.im/${urlObj.hostname}?larger=true`; //效果不好
+        remoteIcon.src = `https://logo.clearbit.com/${urlObj.hostname}`;
+        //remoteIcon.src = `https://www.google.com/s2/favicons?domain=${urlObj.hostname}&sz=128`;
+        // 远程图标加载失败时保持默认图标
+        remoteIcon.onerror = function () {
           cardIcon.src = "assets/default-icon.svg";
         };
-
         const cardContent = document.createElement("div");
-        cardContent.className = "flex flex-col overflow-hidden flex-1"; // Ensure the content is hidden if too long
+        cardContent.className = "flex flex-col overflow-hidden flex-1";
 
         const cardTitle = document.createElement("h2");
         cardTitle.className =
           "text-sm font-semibold mb-1 truncate dark:text-gray-400";
         cardTitle.innerText = title;
 
-        // Clean URL by removing http(s) and trailing slash
         const cleanUrl = url.replace(/^https?:\/\//, "").replace(/\/$/, "");
-
         const cardUrl = document.createElement("p");
         cardUrl.className =
           "text-xs text-gray-400 hover:text-black dark:text-gray-600 dark:hover:text-gray-400 truncate";
-        cardUrl.innerText = cleanUrl; // Use cleaned URL
+        cardUrl.innerText = cleanUrl;
 
         cardContent.appendChild(cardTitle);
-        cardContent.appendChild(cardUrl); // Add URL paragraph
-        // 添加复制按钮
+        cardContent.appendChild(cardUrl);
+
+        // 创建按钮组容器
+        const buttonGroup = document.createElement("div");
+        buttonGroup.className =
+          "flex items-center gap-1 opacity-0 group-hover:opacity-100 ml-2";
+
+        // 添加定位按钮（如果有父路径）
+        if (parentPath && parentPath.length > 0) {
+          const locateButton = document.createElement("button");
+          locateButton.className =
+            "p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 cursor-pointer";
+          //locateButton.title = "定位到所在文件夹";
+          locateButton.innerHTML = `
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7a2 2 0 012-2h4l2 2h7a2 2 0 012 2v7a2 2 0 01-2 2H5a2 2 0 01-2-2V7z" />
+            </svg>`;
+
+          locateButton.onclick = (e) => {
+            e.stopPropagation();
+            state.updatePath(parentPath);
+            let currentFolderId = "";
+            parentPath.forEach((segment) => {
+              currentFolderId = currentFolderId
+                ? currentFolderId + "/" + segment.title
+                : segment.title;
+              state.expandFolder(currentFolderId);
+            });
+
+            // 等待DOM更新完成后查找并高亮目标卡片
+            setTimeout(() => {
+              const targetCard = document.querySelector(`[data-url="${url}"]`);
+              if (targetCard) {
+                targetCard.classList.add("highlight-border");
+                // 动画结束后移除类
+                setTimeout(() => {
+                  targetCard.classList.remove("highlight-border");
+                }, 2100); // 动画持续2.1秒 (0.7s * 3)
+              }
+            }, 100); // 给予足够时间让DOM更新完成
+          };
+          buttonGroup.appendChild(locateButton);
+        }
+
+        // 添加复制按钮（在大屏幕上显示）
         const copyButton = document.createElement("button");
         copyButton.className =
-          "opacity-0 group-hover:opacity-100 ml-2 p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 cursor-pointer";
+          "p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 cursor-pointer hidden lg:block";
         copyButton.innerHTML = `
           <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
           </svg>`;
 
         copyButton.onclick = async (e) => {
-          e.stopPropagation(); // 阻止事件冒泡
-          const updateUIForSuccess = () => {
-            // 复制成功后显示成功图标
+          e.stopPropagation();
+          try {
+            await navigator.clipboard.writeText(url);
             copyButton.innerHTML = `
-              <svg class="h-4 w-4 text-green-500" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-              </svg>`;
-            // 1秒后恢复原始图标
+              <svg class="h-4 w-4 text-green-500" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>`;
             setTimeout(() => {
               copyButton.innerHTML = `
                 <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                 </svg>`;
             }, 1000);
-          };
-
-          try {
-            // 优先使用现代的 Clipboard API
-            if (navigator.clipboard && window.isSecureContext) {
-              await navigator.clipboard.writeText(url);
-              updateUIForSuccess();
-              return;
-            }
-
-            // 降级使用 execCommand
-            const textarea = document.createElement("textarea");
-            textarea.value = url;
-            textarea.style.position = "fixed"; // 防止滚动到底部
-            textarea.style.opacity = "0";
-            document.body.appendChild(textarea);
-            textarea.select();
-
-            const successful = document.execCommand("copy");
-            if (successful) {
-              updateUIForSuccess();
-            }
-
-            // 清理临时元素
-            document.body.removeChild(textarea);
           } catch (err) {
             console.error("复制失败:", err);
           }
         };
+        buttonGroup.appendChild(copyButton);
 
         card.appendChild(cardIcon);
         card.appendChild(cardContent);
-        card.appendChild(copyButton);
+        card.appendChild(buttonGroup);
 
         return card;
       }
 
       // Create folder card element
-      function createFolderCard(title, children, path) {
+      function createFolderCard(title, folder, path) {
         const card = document.createElement("div");
         card.className =
           "folder-card text-gray rounded-lg cursor-pointer flex flex-col items-center";
-        card.onclick = () => {
-          const newPath = path.concat({ title, children });
-          renderBookmarks(children, newPath);
-          updateSidebarActiveState(newPath); // Update sidebar active state
 
-          // 找到并展开对应的侧边栏项目
-          const navItem = Array.from(
-            document.querySelectorAll("#navigation li")
-          ).find((item) => item.querySelector("a")?.innerText === title);
-          if (navItem) {
-            const subList = navItem.nextElementSibling;
-            const toggleIcon = navItem.querySelector(".transform");
-            if (subList && subList.tagName === "UL") {
-              subList.classList.remove("hidden");
-              // 只有在子列表有内容时才旋转箭头
-              if (toggleIcon && subList.children.length > 0) {
-                toggleIcon.classList.add("rotate-90");
-              }
+        const folderInfo = folder.fullPath
+          ? {
+              ...folder,
+              title: title,
+              children: folder.children || folder,
             }
+          : {
+              title: title,
+              children: folder.children || folder,
+              parentPath: path,
+            };
+
+        card.onclick = () => {
+          if (folderInfo.fullPath) {
+            const fullPath = folderInfo.fullPath;
+
+            state.updatePath(fullPath);
+
+            let currentPath = "";
+            fullPath.forEach((segment) => {
+              currentPath = currentPath
+                ? currentPath + "/" + segment.title
+                : segment.title;
+              state.expandFolder(currentPath);
+            });
+
+            const navigationContainer = document.getElementById("navigation");
+            renderNavigation(
+              state.bookmarkData,
+              navigationContainer,
+              false,
+              []
+            );
+            updateSidebarActiveState(fullPath);
+
+            renderBookmarks(folderInfo.children, fullPath);
+          } else {
+            handleFolderClick(folderInfo, path);
           }
         };
 
@@ -598,6 +1113,62 @@
         return card;
       }
 
+      // 通用的文件夹点击处理函数
+      function handleFolderClick(folderInfo, path, clickedNavItem = null) {
+        if (!folderInfo || !folderInfo.children) return;
+
+        const newPath = path.concat({
+          title: folderInfo.title,
+          children: folderInfo.children,
+        });
+
+        // 处理移动导航的展开/收起
+        if (clickedNavItem) {
+          const subList = clickedNavItem.nextElementSibling;
+          const toggleIcon = clickedNavItem.querySelector(".transform");
+
+          if (
+            subList &&
+            subList.tagName.toLowerCase() === "ul" &&
+            subList.children.length > 0
+          ) {
+            const isHidden = subList.classList.contains("hidden");
+
+            // 添加过渡效果
+            if (isHidden) {
+              // 展开
+              subList.style.maxHeight = "0px";
+              subList.classList.remove("hidden");
+              requestAnimationFrame(() => {
+                subList.style.maxHeight = subList.scrollHeight + "px";
+                if (toggleIcon) toggleIcon.classList.add("rotate-90");
+              });
+
+              // 清理maxHeight
+              setTimeout(() => {
+                subList.style.maxHeight = "";
+              }, 200);
+            } else {
+              // 收起
+              subList.style.maxHeight = subList.scrollHeight + "px";
+              requestAnimationFrame(() => {
+                subList.style.maxHeight = "0px";
+                if (toggleIcon) toggleIcon.classList.remove("rotate-90");
+              });
+
+              // 隐藏并清理maxHeight
+              setTimeout(() => {
+                subList.classList.add("hidden");
+                subList.style.maxHeight = "";
+              }, 200);
+            }
+          }
+        }
+
+        // 更新路径和渲染书签
+        state.updatePath(newPath);
+      }
+
       // Render sidebar navigation
       function renderNavigation(
         folders,
@@ -608,86 +1179,77 @@
         container.innerHTML = ""; // Clear previous content
         folders.forEach((folder, index) => {
           if (folder.type === "folder") {
+            const folderId = path
+              .map((p) => p.title)
+              .concat(folder.title)
+              .join("/");
+
             const navItem = document.createElement("li");
             navItem.className =
-              "items-center group flex justify-between gap-x-3 rounded-md p-2 text-gray-700 dark:text-gray-400 hover:text-main-500 hover:bg-gray-50 dark:hover:marksforest-bg-gray-800 bg-opacity-50";
+              "nav-item items-center group flex justify-between gap-x-3 rounded-md p-2 text-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer transition-colors duration-200";
 
             const navLinkContainer = document.createElement("div");
-            navLinkContainer.className = "flex items-center space-x-2 truncate";
+            navLinkContainer.className =
+              "flex items-center space-x-2 truncate flex-1 min-w-0";
 
             const folderIcon = document.createElement("span");
             folderIcon.innerHTML =
               '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="currentColor" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7a2 2 0 012-2h4l2 2h7a2 2 0 012 2v7a2 2 0 01-2 2H5a2 2 0 01-2-2V7z" /></svg>';
-
             const navLink = document.createElement("a");
             navLink.className = "flex text-sm leading-6 font-semibold";
             navLink.innerText = folder.title;
 
             navLinkContainer.appendChild(folderIcon);
             navLinkContainer.appendChild(navLink);
-
-            const toggleIcon = document.createElement("span");
-            toggleIcon.className = "ml-2 transform transition-transform";
-            toggleIcon.innerHTML =
-              '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>';
-
             navItem.appendChild(navLinkContainer);
-            if (folder.children && folder.children.length > 0) {
-              navItem.appendChild(toggleIcon);
-            }
-            container.appendChild(navItem);
 
-            if (folder.children && folder.children.length > 0) {
+            // 检查是否有子文件夹
+            const hasSubfolders =
+              folder.children &&
+              folder.children.some((child) => child.type === "folder");
+
+            if (hasSubfolders) {
+              // 添加箭头图标
+              const toggleIcon = document.createElement("span");
+              toggleIcon.className = "transform transition-transform";
+              toggleIcon.innerHTML =
+                '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>';
+              navItem.appendChild(toggleIcon);
+              //console.log(
+              //  `Number of subfolders in ${folder.title}: ${
+              //    folder.children.filter((child) => child.type === "folder")
+              //      .length
+              //  }`
+              //);
+
               const subList = document.createElement("ul");
-              subList.className = "ml-4 space-y-2 hidden";
+              subList.className =
+                "ml-4 space-y-1 hidden mt-1 overflow-hidden transition-all duration-200";
               renderNavigation(
                 folder.children,
                 subList,
                 false,
                 path.concat({ title: folder.title, children: folder.children })
               );
+              container.appendChild(navItem);
               container.appendChild(subList);
 
               if (isFirstRender && index === 0) {
-                // Expand the first item on initial render
                 subList.classList.remove("hidden");
-                toggleIcon.classList.add("rotate-90");
-              }
-
-              navItem.onclick = (e) => {
-                e.stopPropagation();
-                document
-                  .querySelectorAll("#navigation .sidebar-active")
-                  .forEach((el) => el.classList.remove("sidebar-active"));
-                navItem.classList.add("sidebar-active");
-                subList.classList.toggle("hidden");
-                if (subList.children.length > 0) {
-                  toggleIcon.classList.toggle("rotate-90");
+                const toggleIcon = navItem.querySelector(".transform");
+                if (toggleIcon && subList.children.length > 0) {
+                  toggleIcon.classList.add("rotate-90");
                 }
-                renderBookmarks(
-                  folder.children,
-                  path.concat({
-                    title: folder.title,
-                    children: folder.children,
-                  })
-                );
-              };
+                state.expandFolder(folderId);
+              }
             } else {
-              navItem.onclick = (e) => {
-                e.stopPropagation();
-                document
-                  .querySelectorAll("#navigation .sidebar-active")
-                  .forEach((el) => el.classList.remove("sidebar-active"));
-                navItem.classList.add("sidebar-active");
-                renderBookmarks(
-                  folder.children,
-                  path.concat({
-                    title: folder.title,
-                    children: folder.children,
-                  })
-                );
-              };
+              container.appendChild(navItem);
             }
+
+            navItem.onclick = (e) => {
+              e.stopPropagation();
+              handleFolderClick(folder, path, navItem);
+            };
           }
         });
       }
@@ -696,25 +1258,51 @@
       function renderBreadcrumbs(path) {
         const breadcrumbsPath = document.getElementById("breadcrumbs-path");
         breadcrumbsPath.innerHTML = ""; // Clear previous breadcrumbs
+        breadcrumbsPath.className =
+          "flex items-center gap-2 overflow-x-auto max-w-full";
+
+        const homeLink = document.createElement("a");
+        homeLink.href = "#";
+        homeLink.className =
+          "flex items-center text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300";
+        homeLink.innerHTML =
+          '<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path></svg>';
+        homeLink.onclick = (e) => {
+          e.preventDefault();
+          state.expandedFolders.clear();
+          state.updatePath([]);
+          renderBookmarks(state.bookmarkData, []);
+          updateSidebarActiveState([]);
+          const navigationContainer = document.getElementById("navigation");
+          renderNavigation(state.bookmarkData, navigationContainer, false, []);
+        };
+        breadcrumbsPath.appendChild(homeLink);
 
         path.forEach((item, index) => {
-          const breadcrumb = document.createElement("span");
-          breadcrumb.className = "cursor-pointer hover:underline";
+          const separator = document.createElement("span");
+          separator.className = "text-gray-400 dark:text-gray-500";
+          separator.innerHTML =
+            '<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>';
+          breadcrumbsPath.appendChild(separator);
+
+          const breadcrumb = document.createElement("a");
+          breadcrumb.href = "#";
+          breadcrumb.className =
+            "text-sm hover:text-gray-700 dark:hover:text-gray-300" +
+            (index === path.length - 1
+              ? " text-gray-600 dark:text-gray-300 font-medium"
+              : " text-gray-500 dark:text-gray-400");
           breadcrumb.innerText = item.title;
-          breadcrumb.onclick = () => {
-            // Render bookmarks for the selected breadcrumb
+          breadcrumb.onclick = (e) => {
+            e.preventDefault();
             const newPath = path.slice(0, index + 1);
-            renderBookmarks(item.children, newPath);
-            updateSidebarActiveState(newPath); // Update sidebar active state
+            state.updatePath(newPath);
+            const currentItem = newPath[newPath.length - 1];
+            renderBookmarks(currentItem.children, newPath);
+            updateSidebarActiveState(newPath);
           };
 
           breadcrumbsPath.appendChild(breadcrumb);
-
-          if (index < path.length - 1) {
-            const separator = document.createElement("span");
-            separator.innerText = " > ";
-            breadcrumbsPath.appendChild(separator);
-          }
         });
       }
 
@@ -735,7 +1323,6 @@
                 navItem.classList.add("sidebar-active");
               }
 
-              // 展开子列表
               if (index < path.length - 1) {
                 const subList = navItem.nextElementSibling;
                 if (subList && subList.tagName === "UL") {
@@ -785,36 +1372,43 @@
       // Render bookmarks
       function renderBookmarks(data, path) {
         const container = document.getElementById("bookmarks");
+        if (!container) return;
+
         container.innerHTML = ""; // Clear previous content
 
-        // Render breadcrumbs
+        // Validate data
+        if (!data || !Array.isArray(data)) {
+          container.innerHTML =
+            '<div class="text-center p-4 text-gray-500">No bookmarks available.</div>';
+          return;
+        }
+
         renderBreadcrumbs(path);
 
-        // Separate folders and links
-        const folders = data.filter((item) => item.type === "folder");
-        // const links = data.filter(item => item.type === 'link').sort((a, b) => b.addDate - a.addDate);
-        const links = data.filter((item) => item.type === "link");
+        const folders =
+          data.filter((item) => item && item.type === "folder") || [];
+        const links = data.filter((item) => item && item.type === "link") || [];
 
         if (folders.length === 0 && links.length === 0) {
           showNoResultsMessage();
           return;
         }
 
-        // Create folder section
         if (folders.length > 0) {
           const folderSection = document.createElement("div");
           folderSection.className =
-            "grid grid-cols-[repeat(auto-fill,minmax(7rem,1fr))] gap-4 justify-start px-4";
+            "grid grid-cols-[repeat(auto-fill,minmax(6rem,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(7rem,1fr))] gap-2 sm:gap-4 justify-start px-2 sm:px-4";
           folders.forEach((folder) => {
-            const card = createFolderCard(folder.title, folder.children, path);
-            //card.className =
-            //  "w-[120px] flex flex-col items-center bg-white/5 rounded hover:bg-white/10 hover:-translate-y-1 hover:shadow-lg transition-all cursor-pointer p-2";
-            folderSection.appendChild(card);
+            try {
+              const card = createFolderCard(folder.title, folder, path);
+              folderSection.appendChild(card);
+            } catch (error) {
+              console.error("Error creating folder card:", error);
+            }
           });
           container.appendChild(folderSection);
         }
 
-        // Add separator line if there are links
         if (folders.length > 0 && links.length > 0) {
           const separator = document.createElement("hr");
           separator.className =
@@ -822,91 +1416,47 @@
           container.appendChild(separator);
         }
 
-        // Create link section
         if (links.length > 0) {
           const linkSection = document.createElement("div");
           linkSection.className =
-            "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-6 gap-6";
+            "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-6 gap-4";
           links.forEach((link) => {
-            const card = createCard(link.title, link.url, link.icon);
-            linkSection.appendChild(card);
+            try {
+              const card = createCard(link.title, link.url, link.parentPath);
+              linkSection.appendChild(card);
+            } catch (error) {
+              console.error("Error creating link card:", error);
+            }
           });
           container.appendChild(linkSection);
         }
 
-        // Update sidebar active state
-        updateSidebarActiveState(path);
+        try {
+          updateSidebarActiveState(path);
+        } catch (error) {
+          console.error("Error updating sidebar state:", error);
+        }
       }
-
-      // Fetch and render data
-      fetch("json/marksforest.json")
-        .then((response) => response.json())
-        .then((data) => {
-          // Use the first layer of the data directly
-          const firstLayer = data;
-          // Render navigation using the first layer of data
-          renderNavigation(
-            firstLayer,
-            document.getElementById("navigation"),
-            true
-          );
-          // Render bookmarks using the first layer of data, starting from the Bookmark
-          renderBookmarks(firstLayer, [
-            { title: "Bookmark", children: firstLayer },
-          ]);
-
-          // Automatically select and show the first item
-          if (firstLayer.length > 0) {
-            const firstItem = firstLayer[0];
-            updateSidebarActiveState([
-              { title: firstItem.title, children: firstItem.children },
-            ]);
-            renderBookmarks(firstItem.children, [
-              { title: "Bookmark", children: firstLayer },
-              { title: firstItem.title, children: firstItem.children },
-            ]);
-          }
-        })
-        .catch((error) => console.error("Error loading bookmarks:", error));
-
-      // Search functionality on pressing Enter
-      document
-        .getElementById("searchInput")
-        .addEventListener("keydown", function (event) {
-          if (event.key === "Enter") {
-            const query = event.target.value;
-            searchBookmarks(query);
-          }
-        });
-
-      // Search functionality on button click
-      document
-        .getElementById("searchButton")
-        .addEventListener("click", function () {
-          const query = document.getElementById("searchInput").value;
-          searchBookmarks(query);
-        });
 
       // Theme toggle functionality
       const themeToggleButton = document.getElementById("themeToggleButton");
       const sunIcon = document.getElementById("sunIcon");
       const moonIcon = document.getElementById("moonIcon");
 
-      // Apply dark theme
       function applyDarkTheme() {
         document.documentElement.classList.add("dark");
         sunIcon.classList.add("hidden");
         moonIcon.classList.remove("hidden");
+        localStorage.setItem("theme", "dark");
       }
 
-      // Apply light theme
       function applyLightTheme() {
         document.documentElement.classList.remove("dark");
         sunIcon.classList.remove("hidden");
         moonIcon.classList.add("hidden");
+        localStorage.setItem("theme", "light");
       }
 
-      // Toggle theme between dark and light
       function toggleTheme() {
         if (document.documentElement.classList.contains("dark")) {
           applyLightTheme();
@@ -915,83 +1465,41 @@
         }
       }
 
-      document.addEventListener("DOMContentLoaded", () => {
-        // Fetch and render data
-        fetch("json/marksforest.json")
-          .then((response) => response.json())
-          .then((data) => {
-            // Hide loading spinner
-            document.getElementById("loading-spinner").style.display = "none";
-
-            // Use the first layer of the data directly
-            const firstLayer = data;
-            // Render navigation using the first layer of data
-            renderNavigation(
-              firstLayer,
-              document.getElementById("navigation"),
-              true
-            );
-            // Render bookmarks using the first layer of data, starting from the Bookmark
-            renderBookmarks(firstLayer, [
-              { title: "Bookmark", children: firstLayer },
-            ]);
-
-            // Automatically select and show the first item
-            if (firstLayer.length > 0) {
-              const firstItem = firstLayer[0];
-              updateSidebarActiveState([
-                { title: firstItem.title, children: firstItem.children },
-              ]);
-              renderBookmarks(firstItem.children, [
-                { title: "Bookmark", children: firstLayer },
-                { title: firstItem.title, children: firstItem.children },
-              ]);
-            }
-          })
-          .catch((error) => {
-            console.error("Error loading bookmarks:", error);
-            // Optionally hide the spinner and show an error message
-            document.getElementById("loading-spinner").style.display = "none";
-          });
-      });
-
-      // Event listener for theme toggle button
       themeToggleButton.addEventListener("click", toggleTheme);
 
-      // Automatically apply theme according to system theme settings
-      function applyColorTheme(theme) {
-        if (theme === "dark") {
-          applyDarkTheme();
+      // 主题初始化
+      function initializeTheme() {
+        // 获取保存的主题
+        const savedTheme = localStorage.getItem("theme");
+
+        if (savedTheme) {
+          // 如果有保存的主题设置，使用保存的设置
+          savedTheme === "dark" ? applyDarkTheme() : applyLightTheme();
         } else {
-          applyLightTheme();
+          // 否则跟随系统设置
+          const prefersDarkTheme = window.matchMedia(
+            "(prefers-color-scheme: dark)"
+          ).matches;
+          prefersDarkTheme ? applyDarkTheme() : applyLightTheme();
         }
+
+        // 监听系统主题变化
+        window
+          .matchMedia("(prefers-color-scheme: dark)")
+          .addEventListener("change", (e) => {
+            // 只有在没有保存的主题设置时才跟随系统
+            if (!localStorage.getItem("theme")) {
+              e.matches ? applyDarkTheme() : applyLightTheme();
+            }
+          });
       }
 
-      // Detect initial color theme
-      const prefersDarkTheme = window.matchMedia(
-        "(prefers-color-scheme: dark)"
-      ).matches;
-      applyColorTheme(prefersDarkTheme ? "dark" : "light");
+      // 初始化主题
+      initializeTheme();
+    </script>
 
-      // Listen for changes in the color theme
-      window
-        .matchMedia("(prefers-color-scheme: dark)")
-        .addEventListener("change", (event) => {
-          applyColorTheme(event.matches ? "dark" : "light");
-        });
-
-      //// Open mobile menu
-      //document
-      //  .getElementById("open-sidebar-button")
-      //  .addEventListener("click", function () {
-      //    var navigation = document
-      //      .getElementById("navigation")
-      //      .cloneNode(true);
-      //    document.getElementById("sidebar-2").appendChild(navigation);
-      //  });
-
-      // Draggable sidebar functionality
-      document.addEventListener("DOMContentLoaded", function () {
+    <script>
+      document.addEventListener("DOMContentLoaded", (event) => {
         const handle = document.getElementById("resize-handle");
         const sidebar = document.querySelector(".lg\\:fixed");
         const mainContent = document.querySelector(".lg\\:pl-60");
@@ -1000,22 +1508,18 @@
         const MAX_WIDTH = 500;
         const DEFAULT_WIDTH = 240;
 
-        // 检查是否为桌面模式
         const isDesktopMode = () => window.innerWidth >= 1024;
 
-        // 添加过渡样式
         const addTransition = () => {
           sidebar.style.transition = "width 0.2s ease";
           mainContent.style.transition = "padding-left 0.2s ease";
         };
 
-        // 移除过渡样式
         const removeTransition = () => {
           sidebar.style.transition = "none";
           mainContent.style.transition = "none";
         };
 
-        // 重置为默认状态
         const resetToDefault = () => {
           removeTransition();
           requestAnimationFrame(() => {
@@ -1028,7 +1532,6 @@
           });
         };
 
-        // 设置自定义宽度
         const setCustomWidth = (width, withTransition = true) => {
           if (width >= MIN_WIDTH && width <= MAX_WIDTH) {
             if (!withTransition) removeTransition();
@@ -1048,7 +1551,6 @@
           }
         };
 
-        // 恢复保存的宽度
         const restoreSavedWidth = (withTransition = true) => {
           const savedWidth = localStorage.getItem("sidebarWidth");
           if (savedWidth) {
@@ -1064,12 +1566,10 @@
         };
 
         if (handle && sidebar && mainContent) {
-          // 初始化
           if (isDesktopMode()) {
             restoreSavedWidth(false);
           }
 
-          // 处理鼠标拖动
           handle.addEventListener("mousedown", function (e) {
             if (!isDesktopMode()) return;
             e.preventDefault();
@@ -1100,7 +1600,6 @@
             document.addEventListener("mouseup", onMouseUp);
           });
 
-          // 处理窗口大小变化
           let lastWidth = window.innerWidth;
           let resizeRAF;
 
@@ -1127,14 +1626,117 @@
             });
           });
 
-          // 添加初始过渡效果
           addTransition();
         }
       });
+
+      // Handle mobile navigation
+      function initializeMobileNavigation() {
+        const mobileNavigation = document.getElementById("mobile-navigation");
+
+        // Clone desktop navigation items to mobile
+        function updateMobileNavigation() {
+          if (!mobileNavigation) return;
+
+          // Clear existing content
+          mobileNavigation.innerHTML = "";
+
+          // Create root container
+          const rootList = document.createElement("ul");
+          rootList.className = "space-y-1";
+          mobileNavigation.appendChild(rootList);
+
+          // Get the bookmark data
+          const bookmarkData = window.marksForestData;
+          if (!bookmarkData || !Array.isArray(bookmarkData)) {
+            mobileNavigation.innerHTML =
+              '<div class="text-center p-4 text-gray-500">No bookmarks available</div>';
+            return;
+          }
+
+          // Render the navigation tree
+          renderNavigation(bookmarkData, rootList, true);
+
+          // Expand the first folder
+          const firstFolder = rootList.querySelector(".nav-item");
+          if (firstFolder) {
+            const subList = firstFolder.nextElementSibling;
+            if (subList && subList.tagName === "UL") {
+              subList.classList.remove("hidden");
+              const toggleIcon = firstFolder.querySelector(".transform");
+              if (toggleIcon) {
+                toggleIcon.classList.add("rotate-90");
+              }
+            }
+          }
+        }
+
+        // Initial update
+        updateMobileNavigation();
+
+        // Update mobile navigation when data changes
+        window.addEventListener(
+          "marksforest-data-updated",
+          updateMobileNavigation
+        );
+      }
+
+      // Initialize mobile navigation after data is loaded
+      window.addEventListener(
+        "marksforest-data-loaded",
+        initializeMobileNavigation
+      );
     </script>
 
     <script>
-      document.addEventListener("DOMContentLoaded", (event) => {
+      // Load bookmark data
+      const initialHash = window.location.hash; // 保存初始路径
+      let dataLoaded = false; // 标记数据是否已加载
+
+      fetch("json/marksforest.json")
+        .then((response) => response.json())
+        .then((data) => {
+          // Store data globally
+          window.marksForestData = data;
+          state.bookmarkData = data;
+          dataLoaded = true;
+
+          // Initialize UI with empty state
+          const container = document.getElementById("bookmarks");
+          if (container) {
+            container.innerHTML = "";
+          }
+
+          // 处理初始路径
+          if (initialHash && initialHash !== "#") {
+            const pathSegments = state.urlToPath(initialHash);
+            const validPath = state.validatePath(pathSegments);
+            if (validPath) {
+              state.updatePath(validPath);
+            } else {
+              state.initializeFirstFolder();
+            }
+          } else {
+            state.initializeFirstFolder();
+          }
+
+          // Dispatch data loaded event for mobile navigation
+          window.dispatchEvent(new Event("marksforest-data-loaded"));
+        })
+        .catch((error) => {
+          console.error("Error loading bookmark data:", error);
+          dataLoaded = true;
+          // Show error message to user
+          const container = document.getElementById("bookmarks");
+          if (container) {
+            container.innerHTML =
+              '<div class="text-center p-4 text-gray-500">Failed to load bookmarks. Please try again later.</div>';
+          }
+        });
+    </script>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
         const yearElement = document.getElementById("currentYear");
         const currentYear = new Date().getFullYear();
         yearElement.textContent = currentYear;
