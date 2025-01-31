@@ -248,12 +248,6 @@
                   class="text-sm text-gray-900 dark:text-gray-400 pl-8 w-full h-full border-0 focus:outline-none focus:ring-0 dark:pintree-bg-gray-900"
                   placeholder="Search..."
                 />
-                <button
-                  id="clearSearchButton"
-                  class="text-sm text-gray-500 mr-4 rounded hidden"
-                >
-                  Clear
-                </button>
               </div>
             </div>
             <a
@@ -507,48 +501,6 @@
         searchBookmarks(query);
       });
 
-      // Clear search results and reset UI
-      function clearSearchResults() {
-        fetch("json/pintree.json")
-          .then((response) => response.json())
-          .then((data) => {
-            const secondLayer = data[0].children;
-            renderNavigation(
-              secondLayer,
-              document.getElementById("navigation")
-            );
-            renderBookmarks(secondLayer, [
-              { title: "Bookmark", children: secondLayer },
-            ]);
-            document.getElementById("searchInput").value = "";
-            document
-              .getElementById("clearSearchButton")
-              .classList.add("hidden");
-          })
-          .catch((error) =>
-            console.error("Error clearing search results:", error)
-          );
-      }
-
-      document
-        .getElementById("clearSearchButton")
-        .addEventListener("click", clearSearchResults);
-
-      function searchBookmarks(query) {
-        fetch("json/pintree.json")
-          .then((response) => response.json())
-          .then((data) => {
-            const results = searchInData(data, query.toLowerCase());
-            renderBookmarks(results, [
-              { title: "Search Results", children: results },
-            ]);
-            document
-              .getElementById("clearSearchButton")
-              .classList.remove("hidden");
-          })
-          .catch((error) => console.error("Error searching bookmarks:", error));
-      }
-
       // Create bookmark card element
       function createCard(title, url, icon) {
         const card = document.createElement("div");
@@ -777,9 +729,6 @@
             const newPath = path.slice(0, index + 1);
             renderBookmarks(item.children, newPath);
             updateSidebarActiveState(newPath); // Update sidebar active state
-            document
-              .getElementById("clearSearchButton")
-              .classList.add("hidden"); // Hide clear button when navigating through breadcrumbs
           };
 
           breadcrumbsPath.appendChild(breadcrumb);
