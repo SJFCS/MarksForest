@@ -1,20 +1,19 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full dark:pintree-bg-gray-900 bg-white">
+<html lang="en" class="h-full dark:marksforest-bg-gray-900 bg-white">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Pintree</title>
+    <title>MarksForest</title>
     <meta
       name="keywords"
-      content="Pintree, Bookmarks, Link Management, Export Bookmarks, Website Bookmarks"
+      content="MarksForest, Bookmarks, Link Management, Export Bookmarks, Website Bookmarks"
     />
     <meta
       name="description"
-      content="Pintree is a powerful tool that helps you manage and export your browser bookmarks, converting them into an aesthetically pleasing website that is easy to share and access."
+      content="MarksForest is a powerful tool that helps you manage and export your browser bookmarks, converting them into an aesthetically pleasing website that is easy to share and access."
     />
-    <meta name="author" content="Pintree" />
+    <meta name="author" content="MarksForest" />
     <meta name="robots" content="index, follow" />
-    <link rel="canonical" href="https://www.pintree.io" />
 
     <!-- Favicon -->
     <link
@@ -48,19 +47,19 @@
       {
         "@context": "https://schema.org",
         "@type": "WebSite",
-        "url": "https://www.pintree.io",
-        "name": "Pintree",
+        "url": "https://marksforest.cloudnative.love",
+        "name": "MarksForest",
         "description": "Managing and Exporting your Bookmarks into a Website",
         "potentialAction": {
           "@type": "SearchAction",
-          "target": "https://www.pintree.io/search?q={search_term_string}",
+          "target": "https://marksforest.cloudnative.love/search?q={search_term_string}",
           "query-input": "required name=search_term_string"
         }
       }
     </script>
   </head>
 
-  <body class="h-full dark:pintree-bg-gray-900 bg-white">
+  <body class="h-full dark:marksforest-bg-gray-900 bg-white">
     <div>
       <!-- Mobile Off-Canvas Menu -->
       <div
@@ -105,16 +104,16 @@
 
             <!-- Off-canvas Sidebar content -->
             <div
-              class="flex grow flex-col gap-y-5 overflow-y-auto bg-white dark:pintree-bg-gray-900 px-6 pb-4"
+              class="flex grow flex-col gap-y-5 overflow-y-auto bg-white dark:marksforest-bg-gray-900 px-6 pb-4"
             >
               <div class="flex h-16 shrink-0 items-center">
                 <img
                   class="pl-2 h-8 w-auto"
                   src="assets/logo.svg"
-                  alt="Pintree"
+                  alt="MarksForest"
                 />
                 <a href="" class="ml-4 font-extrabold text-2xl dark:text-white"
-                  >Pintree</a
+                  >MarksForest</a
                 >
               </div>
               <div id="sidebar-2" class="flex flex-1 flex-col">
@@ -130,12 +129,16 @@
         class="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-60 lg:flex-col"
       >
         <div
-          class="flex flex-col border-r border-gray-200 dark:pintree-border-gray-800 bg-white px-4 h-full font-semibold dark:pintree-bg-gray-900"
+          class="flex flex-col border-r border-gray-200 dark:marksforest-border-gray-800 bg-white px-4 h-full font-semibold dark:marksforest-bg-gray-900"
         >
           <div class="flex p-0 h-16 shrink-0 items-center">
-            <img class="pl-2 h-8 w-auto" src="assets/logo.svg" alt="Pintree" />
+            <img
+              class="pl-2 h-8 w-auto"
+              src="assets/logo.svg"
+              alt="MarksForest"
+            />
             <a href="" class="ml-4 font-extrabold text-2xl dark:text-white"
-              >Pintree</a
+              >MarksForest</a
             >
           </div>
           <div
@@ -156,9 +159,11 @@
       </div>
 
       <!-- Main Content Area -->
-      <div class="lg:pl-60 dark:pintree-bg-gray-900 flex flex-col min-h-screen">
+      <div
+        class="lg:pl-60 dark:marksforest-bg-gray-900 flex flex-col min-h-screen"
+      >
         <div
-          class="items-center justify-between sticky top-0 z-40 flex h-16 shrink-0 gap-x-4 border-b border-gray-200 dark:pintree-border-gray-800 bg-white dark:pintree-bg-gray-900 px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8"
+          class="items-center justify-between sticky top-0 z-40 flex h-16 shrink-0 gap-x-4 border-b border-gray-200 dark:marksforest-border-gray-800 bg-white dark:marksforest-bg-gray-900 px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8"
         >
           <div
             class="h-full items-center flex flex-1 gap-x-4 self-stretch lg:gap-x-6 justify-between"
@@ -167,7 +172,7 @@
               <img
                 class="pl-2 h-8 w-auto lg:hidden"
                 src="assets/logo.svg"
-                alt="Pintree"
+                alt="MarksForest"
               />
               <div
                 class="hidden lg:block relative w-full h-full items-center justify-between"
@@ -192,7 +197,7 @@
                 <input
                   id="searchInput"
                   type="search"
-                  class="text-sm text-gray-900 dark:text-gray-400 pl-8 w-full h-full border-0 focus:outline-none focus:ring-0 dark:pintree-bg-gray-900"
+                  class="text-sm text-gray-900 dark:text-gray-400 pl-8 w-full h-full border-0 focus:outline-none focus:ring-0 dark:marksforest-bg-gray-900"
                   placeholder="Search..."
                 />
               </div>
@@ -200,14 +205,14 @@
             <a
               href=""
               class="lg:hidden ml-4 font-extrabold text-2xl dark:text-white"
-              >Pintree</a
+              >MarksForest</a
             >
             <div class="relative">
               <button
                 id="themeToggleButton"
                 type="button"
                 aria-label="Switch theme"
-                class="group rounded-full bg-white/90 px-3 py-2 shadow-lg shadow-zinc-800/5 ring-1 ring-zinc-900/5 backdrop-blur transition dark:pintree-bg-gray-900 dark:ring-white/10 dark:hover:ring-white/20"
+                class="group rounded-full bg-white/90 px-3 py-2 shadow-lg shadow-zinc-800/5 ring-1 ring-zinc-900/5 backdrop-blur transition dark:marksforest-bg-gray-900 dark:ring-white/10 dark:hover:ring-white/20"
               >
                 <svg
                   id="sunIcon"
@@ -245,7 +250,7 @@
         </div>
 
         <!-- Main content area -->
-        <main class="mt-4 dark:pintree-bg-gray-900 flex-grow">
+        <main class="mt-4 dark:marksforest-bg-gray-900 flex-grow">
           <div
             id="loading-spinner"
             class="flex justify-center items-center h-full"
@@ -268,13 +273,13 @@
         </main>
 
         <!-- Footer -->
-        <footer class="bg-white w-full dark:pintree-bg-gray-900">
+        <footer class="bg-white w-full dark:marksforest-bg-gray-900">
           <div
             class="mx-auto px-6 py-6 md:flex md:items-center md:justify-between lg:px-8"
           >
             <div class="flex justify-center space-x-6 md:order-2">
               <a
-                href="https://github.com/Pintree-io/pintree"
+                href="https://github.com/SJFCS/MarksForest"
                 target="_blank"
                 class="text-gray-400 hover:text-gray-500"
               >
@@ -299,7 +304,6 @@
               >
                 &copy; <span id="currentYear"></span>&nbsp;Built with
                 <a
-                  href="https://pintree.io"
                   class="text-green-600 hover:text-green-500 flex items-center ml-1"
                   target="_blank"
                 >
@@ -332,7 +336,7 @@
                       </clipPath>
                     </defs>
                   </svg>
-                  Pintree
+                  MarksForest
                 </a>
               </p>
             </div>
@@ -399,7 +403,7 @@
 
       // Search functionality
       function searchBookmarks(query) {
-        fetch("json/pintree.json")
+        fetch("json/marksforest.json")
           .then((response) => response.json())
           .then((data) => {
             const results = searchInData(data, query.toLowerCase());
@@ -437,7 +441,7 @@
         const urlObj = new URL(url);
 
         card.className =
-          "cursor-pointer flex items-center hover:shadow-sm transition-shadow p-4 bg-white shadow-sm ring-1 ring-gray-900/5 dark:pintree-ring-gray-800 rounded-lg hover:bg-gray-100 dark:pintree-bg-gray-900 dark:hover:pintree-bg-gray-800 group";
+          "cursor-pointer flex items-center hover:shadow-sm transition-shadow p-4 bg-white shadow-sm ring-1 ring-gray-900/5 dark:marksforest-ring-gray-800 rounded-lg hover:bg-gray-100 dark:marksforest-bg-gray-900 dark:hover:marksforest-bg-gray-800 group";
         card.onclick = () => window.open(url, "_blank"); // Make the whole card clickable
 
         const cardIcon = document.createElement("img");
@@ -606,7 +610,7 @@
           if (folder.type === "folder") {
             const navItem = document.createElement("li");
             navItem.className =
-              "items-center group flex justify-between gap-x-3 rounded-md p-2 text-gray-700 dark:text-gray-400 hover:text-main-500 hover:bg-gray-50 dark:hover:pintree-bg-gray-800 bg-opacity-50";
+              "items-center group flex justify-between gap-x-3 rounded-md p-2 text-gray-700 dark:text-gray-400 hover:text-main-500 hover:bg-gray-50 dark:hover:marksforest-bg-gray-800 bg-opacity-50";
 
             const navLinkContainer = document.createElement("div");
             navLinkContainer.className = "flex items-center space-x-2 truncate";
@@ -814,7 +818,7 @@
         if (folders.length > 0 && links.length > 0) {
           const separator = document.createElement("hr");
           separator.className =
-            "my-1 border-t-1 border-gray-200 dark:pintree-border-gray-800";
+            "my-1 border-t-1 border-gray-200 dark:marksforest-border-gray-800";
           container.appendChild(separator);
         }
 
@@ -835,7 +839,7 @@
       }
 
       // Fetch and render data
-      fetch("json/pintree.json")
+      fetch("json/marksforest.json")
         .then((response) => response.json())
         .then((data) => {
           // Use the first layer of the data directly
@@ -913,7 +917,7 @@
 
       document.addEventListener("DOMContentLoaded", () => {
         // Fetch and render data
-        fetch("json/pintree.json")
+        fetch("json/marksforest.json")
           .then((response) => response.json())
           .then((data) => {
             // Hide loading spinner
@@ -992,8 +996,8 @@
         const sidebar = document.querySelector(".lg\\:fixed");
         const mainContent = document.querySelector(".lg\\:pl-60");
         let isResizing = false;
-        const MIN_WIDTH = 200;
-        const MAX_WIDTH = 400;
+        const MIN_WIDTH = 240;
+        const MAX_WIDTH = 500;
         const DEFAULT_WIDTH = 240;
 
         // 检查是否为桌面模式

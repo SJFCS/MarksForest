@@ -1,9 +1,9 @@
-const CACHE_NAME = 'pintree-cache-v1';
-const ICON_CACHE_NAME = 'pintree-icons-v1';
+const CACHE_NAME = 'marksforest-cache-v1';
+const ICON_CACHE_NAME = 'marksforest-icons-v1';
 const CACHE_URLS = [
   './',
   './index.html',
-  './json/pintree.json',
+  './json/marksforest.json',
   './assets/default-icon.svg'
 ];
 
