@@ -562,9 +562,9 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
           </svg>`;
 
-        copyButton.onclick = (e) => {
-          e.stopPropagation(); // 阻止事件冒泡，避免触发卡片的点击事件
-          navigator.clipboard.writeText(url).then(() => {
+        copyButton.onclick = async (e) => {
+          e.stopPropagation(); // 阻止事件冒泡
+          const updateUIForSuccess = () => {
             // 复制成功后显示成功图标
             copyButton.innerHTML = `
               <svg class="h-4 w-4 text-green-500" viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -577,7 +577,34 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                 </svg>`;
             }, 1000);
-          });
+          };
+
+          try {
+            // 优先使用现代的 Clipboard API
+            if (navigator.clipboard && window.isSecureContext) {
+              await navigator.clipboard.writeText(url);
+              updateUIForSuccess();
+              return;
+            }
+
+            // 降级使用 execCommand
+            const textarea = document.createElement("textarea");
+            textarea.value = url;
+            textarea.style.position = "fixed"; // 防止滚动到底部
+            textarea.style.opacity = "0";
+            document.body.appendChild(textarea);
+            textarea.select();
+
+            const successful = document.execCommand("copy");
+            if (successful) {
+              updateUIForSuccess();
+            }
+
+            // 清理临时元素
+            document.body.removeChild(textarea);
+          } catch (err) {
+            console.error("复制失败:", err);
+          }
         };
 
         card.appendChild(cardIcon);
