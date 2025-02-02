@@ -720,11 +720,9 @@
           const loadingSpinner = document.getElementById("loading-spinner");
           loadingSpinner.style.display = "flex";
 
-          // 加载数据
-          const response = await fetch("json/marksforest.json");
+          // 加载数据 保存数据到全局状态
+          const response = await fetch("json/marksforest-chrome.json");
           const data = await response.json();
-
-          // 保存数据到全局状态
           state.bookmarkData = data;
 
           // 渲染导航
@@ -743,6 +741,35 @@
           } else {
             state.initializeFirstFolder();
           }
+
+          // 移动端侧边栏
+          // Load bookmark data
+          const initialHash = window.location.hash; // 保存初始路径
+
+          // Store data globally
+          window.marksForestData = data;
+
+          // 初始化界面
+          const container = document.getElementById("bookmarks");
+          if (container) {
+            container.innerHTML = "";
+          }
+
+          // 处理初始路径
+          if (initialHash && initialHash !== "#") {
+            const pathSegments = state.urlToPath(initialHash);
+            const validPath = state.validatePath(pathSegments);
+            if (validPath) {
+              state.updatePath(validPath);
+            } else {
+              state.initializeFirstFolder();
+            }
+          } else {
+            state.initializeFirstFolder();
+          }
+          // Dispatch data loaded event for mobile navigation
+          window.dispatchEvent(new Event("marksforest-data-loaded"));
+          // 移动端侧边栏 end
 
           // 初始化其他功能
           initializeSearch();
@@ -1686,53 +1713,6 @@
         "marksforest-data-loaded",
         initializeMobileNavigation
       );
-    </script>
-
-    <script>
-      // Load bookmark data
-      const initialHash = window.location.hash; // 保存初始路径
-      let dataLoaded = false; // 标记数据是否已加载
-
-      fetch("json/marksforest.json")
-        .then((response) => response.json())
-        .then((data) => {
-          // Store data globally
-          window.marksForestData = data;
-          state.bookmarkData = data;
-          dataLoaded = true;
-
-          // Initialize UI with empty state
-          const container = document.getElementById("bookmarks");
-          if (container) {
-            container.innerHTML = "";
-          }
-
-          // 处理初始路径
-          if (initialHash && initialHash !== "#") {
-            const pathSegments = state.urlToPath(initialHash);
-            const validPath = state.validatePath(pathSegments);
-            if (validPath) {
-              state.updatePath(validPath);
-            } else {
-              state.initializeFirstFolder();
-            }
-          } else {
-            state.initializeFirstFolder();
-          }
-
-          // Dispatch data loaded event for mobile navigation
-          window.dispatchEvent(new Event("marksforest-data-loaded"));
-        })
-        .catch((error) => {
-          console.error("Error loading bookmark data:", error);
-          dataLoaded = true;
-          // Show error message to user
-          const container = document.getElementById("bookmarks");
-          if (container) {
-            container.innerHTML =
-              '<div class="text-center p-4 text-gray-500">Failed to load bookmarks. Please try again later.</div>';
-          }
-        });
     </script>
 
     <script>
