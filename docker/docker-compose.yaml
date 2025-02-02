@@ -1,0 +1,20 @@
+services:
+  caddy:
+    image: caddy:latest
+    container_name: marksforest
+    restart: always
+    ports:
+      - "8080:80"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - ../:/srv/marksforest
+      # - ~/.config/google-chrome/:/chrome_data:ro # if you use chrome bookmarks data，comment this line
+      - caddy_data:/data
+      - caddy_config:/config
+    # If you use Chrome bookmarks data, comment next line. Note that entrypoint and volumes are at the same level.
+    # entrypoint: sh -c "ln -sf /chrome_data/Default/Bookmarks /srv/marksforest/json/marksforest.json && caddy run --config /etc/caddy/Caddyfile --adapter caddyfile"
+
+volumes:
+  caddy_data:
+  caddy_config:
+# docker exec -it caddy caddy reload --config /etc/caddy/Caddyfile
