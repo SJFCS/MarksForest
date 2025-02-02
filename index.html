@@ -580,9 +580,11 @@
 
         // 更新侧边栏状态
         updateSidebarState(path) {
-          // 清除所有活跃状态
+          // 清除激活样式
           document
-            .querySelectorAll("#navigation .sidebar-active")
+            .querySelectorAll(
+              "#navigation .sidebar-active, #mobile-navigation .sidebar-active"
+            )
             .forEach((el) => el.classList.remove("sidebar-active"));
 
           // 设置新的活跃状态
@@ -720,10 +722,8 @@
           const loadingSpinner = document.getElementById("loading-spinner");
           loadingSpinner.style.display = "flex";
 
-          // 加载数据 保存数据到全局状态
-          const response = await fetch("json/marksforest-chrome.json");
-          const data = await response.json();
-          state.bookmarkData = data;
+          // 加载数据
+          const data = await loadBookmarks();
 
           // 渲染导航
           const navigationContainer = document.getElementById("navigation");
@@ -741,7 +741,7 @@
           } else {
             state.initializeFirstFolder();
           }
-
+          // TODO
           // 移动端侧边栏
           // Load bookmark data
           const initialHash = window.location.hash; // 保存初始路径
@@ -768,8 +768,10 @@
             state.initializeFirstFolder();
           }
           // Dispatch data loaded event for mobile navigation
-          window.dispatchEvent(new Event("marksforest-data-loaded"));
-          // 移动端侧边栏 end
+          const event = new CustomEvent("marksforest-data-loaded", {
+            detail: { path: state.getCurrentPath() },
+          });
+          window.dispatchEvent(event);
 
           // 初始化其他功能
           initializeSearch();
@@ -796,6 +798,150 @@
           state.initializeFirstFolder();
         }
       });
+
+      // 加载书签数据
+      async function loadBookmarks() {
+        try {
+          const response = await fetch("json/marksforest.json");
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          const rawData = await response.json();
+          // 处理书签数据
+          state.bookmarkData = processBookmarkData(rawData);
+          window.marksForestData = state.bookmarkData; // 同时保存到 window 对象，保持兼容性
+
+          // 初始化界面
+          const container = document.getElementById("bookmarks");
+          if (container) {
+            container.innerHTML = "";
+          }
+
+          // 处理初始路径
+          const initialHash = window.location.hash;
+          if (initialHash && initialHash !== "#") {
+            const pathSegments = state.urlToPath(initialHash);
+            const validPath = state.validatePath(pathSegments);
+            if (validPath) {
+              state.updatePath(validPath);
+            } else {
+              state.initializeFirstFolder();
+            }
+          } else {
+            state.initializeFirstFolder();
+          }
+
+          // 触发数据加载完成事件，传递当前路径信息
+          const event = new CustomEvent("marksforest-data-loaded", {
+            detail: { path: state.getCurrentPath() },
+          });
+          window.dispatchEvent(event);
+
+          // 初始化其他功能
+          initializeSearch();
+          initializeSidebar();
+
+          return state.bookmarkData;
+        } catch (error) {
+          console.error("Error loading bookmarks:", error);
+          throw error;
+        }
+      }
+
+      // 处理书签数据
+      function processBookmarkData(data) {
+        // 如果是数组，说明已经是处理过的格式
+        if (Array.isArray(data)) {
+          console.log("Processing array format");
+          return data.map((item) => processBookmarkItem(item)).filter(Boolean);
+        }
+
+        // 处理 Chrome 书签格式
+        if (data.roots) {
+          const processedData = [];
+
+          // Chrome 书签的三个主要目录
+          const rootFolders = {
+            bookmark_bar: "书签栏",
+            other: "其他书签",
+            synced: "移动设备书签",
+          };
+
+          // 处理每个根目录
+          for (const [key, title] of Object.entries(rootFolders)) {
+            const root = data.roots[key];
+            if (root && root.children) {
+              const folder = {
+                title: title,
+                type: "folder",
+                children: processChildren(root.children),
+              };
+              processedData.push(folder);
+            }
+          }
+
+          return processedData;
+        }
+
+        console.error("Unknown bookmark format:", data);
+        return [];
+      }
+
+      // 处理单个书签项
+      function processBookmarkItem(item) {
+        if (!item) {
+          console.warn("Received null/undefined item");
+          return null;
+        }
+
+        // 如果已经是正确的格式，递归处理子项
+        if (item.type === "folder" || item.type === "link") {
+          const processed = {
+            ...item,
+            title: item.title || item.name || "Untitled",
+            children: item.children
+              ? item.children
+                  .map((child) => processBookmarkItem(child))
+                  .filter(Boolean)
+              : [],
+          };
+          return processed;
+        }
+
+        // 处理 Chrome 书签格式
+        const processedItem = {
+          title: item.name || item.title || "Untitled",
+          type: item.url ? "link" : "folder",
+          dateAdded: item.date_added,
+          dateModified: item.date_modified,
+        };
+
+        if (processedItem.type === "link") {
+          processedItem.url = item.url;
+        } else {
+          processedItem.children = item.children
+            ? item.children
+                .map((child) => processBookmarkItem(child))
+                .filter(Boolean)
+            : [];
+        }
+
+        return processedItem;
+      }
+
+      // 处理子项
+      function processChildren(children) {
+        if (!Array.isArray(children)) {
+          console.warn("Children is not an array:", children);
+          return [];
+        }
+
+        const processed = children
+          .map((child) => processBookmarkItem(child))
+          .filter(Boolean);
+
+        return processed;
+      }
 
       // 初始化搜索功能
       function initializeSearch() {
@@ -949,10 +1095,8 @@
       // Create bookmark card element
       function createCard(title, url, parentPath) {
         const card = document.createElement("div");
-        const urlObj = new URL(url);
-
         card.className =
-          "cursor-pointer flex items-center hover:shadow-sm transition-all p-4 bg-white shadow-sm ring-1 ring-gray-900/5 dark:marksforest-ring-gray-800 rounded-lg hover:bg-gray-100 dark:marksforest-bg-gray-900 dark:hover:marksforest-bg-gray-800 group active:scale-[0.99] active:bg-gray-200 dark:active:marksforest-bg-gray-700";
+          "cursor-pointer flex items-center hover:shadow-sm transition-all p-4 bg-white shadow-sm ring-1 ring-gray-900/5 dark:marksforest-ring-gray-800 rounded-lg hover:bg-gray-100 dark:marksforest-bg-gray-900 dark:hover:marksforest-bg-gray-800 group active:scale-[0.99] active:bg-gray-200 dark:active:marksforest-bg-gray-700 transform-gpu opacity-0 translate-y-4 duration-400 ease-out";
         card.setAttribute("data-url", url);
 
         card.onclick = () => window.open(url, "_blank");
@@ -970,9 +1114,9 @@
         };
 
         // 尝试加载远程图标
-        //remoteIcon.src = `https://favicon.im/${urlObj.hostname}?larger=true`; //效果不好
-        remoteIcon.src = `https://logo.clearbit.com/${urlObj.hostname}`;
-        //remoteIcon.src = `https://www.google.com/s2/favicons?domain=${urlObj.hostname}&sz=128`;
+        //remoteIcon.src = `https://favicon.im/${new URL(url).hostname}?larger=true`; //效果不好
+        remoteIcon.src = `https://logo.clearbit.com/${new URL(url).hostname}`;
+        //remoteIcon.src = `https://www.google.com/s2/favicons?domain=${new URL(url).hostname}&sz=128`;
         // 远程图标加载失败时保持默认图标
         remoteIcon.onerror = function () {
           cardIcon.src = "assets/default-icon.svg";
@@ -1066,6 +1210,28 @@
         card.appendChild(cardIcon);
         card.appendChild(cardContent);
         card.appendChild(buttonGroup);
+
+        // 添加到观察列表
+        const cardObserver = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                // 元素进入视口时，添加动画效果
+                requestAnimationFrame(() => {
+                  entry.target.classList.remove("opacity-0", "translate-y-4");
+                });
+                // 动画触发后就不再观察
+                cardObserver.unobserve(entry.target);
+              }
+            });
+          },
+          {
+            root: null, // 使用视口作为根
+            rootMargin: "50px", // 提前 50px 开始加载
+            threshold: 0.1, // 元素 10% 可见时触发
+          }
+        );
+        cardObserver.observe(card);
 
         return card;
       }
@@ -1192,8 +1358,18 @@
           }
         }
 
-        // 更新路径和渲染书签
-        state.updatePath(newPath);
+        // 检查是否是当前激活的路径
+        const currentPath = state.getCurrentPath();
+        const isSamePath =
+          currentPath.length === newPath.length &&
+          currentPath.every(
+            (item, index) => item.title === newPath[index].title
+          );
+
+        // 只有在路径不同时才更新路径和渲染书签
+        if (!isSamePath) {
+          state.updatePath(newPath);
+        }
       }
 
       // Render sidebar navigation
@@ -1204,6 +1380,8 @@
         path = []
       ) {
         container.innerHTML = ""; // Clear previous content
+        const fragment = document.createDocumentFragment();
+
         folders.forEach((folder, index) => {
           if (folder.type === "folder") {
             const folderId = path
@@ -1242,24 +1420,20 @@
               toggleIcon.innerHTML =
                 '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>';
               navItem.appendChild(toggleIcon);
-              //console.log(
-              //  `Number of subfolders in ${folder.title}: ${
-              //    folder.children.filter((child) => child.type === "folder")
-              //      .length
-              //  }`
-              //);
 
               const subList = document.createElement("ul");
               subList.className =
                 "ml-4 space-y-1 hidden mt-1 overflow-hidden transition-all duration-200";
+
+              // 渲染侧边栏文件夹列表
               renderNavigation(
                 folder.children,
                 subList,
                 false,
                 path.concat({ title: folder.title, children: folder.children })
               );
-              container.appendChild(navItem);
-              container.appendChild(subList);
+              fragment.appendChild(navItem);
+              fragment.appendChild(subList);
 
               if (isFirstRender && index === 0) {
                 subList.classList.remove("hidden");
@@ -1270,15 +1444,38 @@
                 state.expandFolder(folderId);
               }
             } else {
-              container.appendChild(navItem);
+              fragment.appendChild(navItem);
             }
 
-            navItem.onclick = (e) => {
-              e.stopPropagation();
-              handleFolderClick(folder, path, navItem);
-            };
+            // 使用事件委托来处理点击事件
+            navItem.dataset.folderId = folderId;
           }
         });
+
+        // 一次性添加所有元素
+        container.appendChild(fragment);
+
+        // 如果还没有添加过事件监听器，添加事件委托
+        if (!container.hasAttribute("data-has-click-listener")) {
+          container.setAttribute("data-has-click-listener", "true");
+          container.addEventListener("click", (e) => {
+            const navItem = e.target.closest(".nav-item");
+            if (navItem) {
+              e.stopPropagation();
+              const folderId = navItem.dataset.folderId;
+              const folder = folders.find(
+                (f) =>
+                  path
+                    .map((p) => p.title)
+                    .concat(f.title)
+                    .join("/") === folderId
+              );
+              if (folder) {
+                handleFolderClick(folder, path, navItem);
+              }
+            }
+          });
+        }
       }
 
       // Render breadcrumbs for navigation
@@ -1335,12 +1532,15 @@
 
       // Update the active state of sidebar items
       function updateSidebarActiveState(path) {
+        // 清除桌面端和移动端的激活状态
         document
-          .querySelectorAll("#navigation .sidebar-active")
+          .querySelectorAll(
+            "#navigation .sidebar-active, #mobile-navigation .sidebar-active"
+          )
           .forEach((el) => el.classList.remove("sidebar-active"));
 
+        // 处理桌面端导航
         let currentNav = document.getElementById("navigation");
-
         path.forEach((item, index) => {
           const items = currentNav.querySelectorAll("li");
           items.forEach((navItem) => {
@@ -1360,6 +1560,34 @@
             }
           });
         });
+
+        // 处理移动端导航
+        currentNav = document.getElementById("mobile-navigation");
+        if (currentNav && path.length > 0) {
+          // 展开路径上的所有文件夹
+          path.forEach((item, index) => {
+            const items = currentNav.querySelectorAll("li");
+            items.forEach((navItem) => {
+              const navLink = navItem.querySelector("a");
+              if (navLink && navLink.innerText === item.title) {
+                if (index === path.length - 1) {
+                  navItem.classList.add("sidebar-active");
+                }
+
+                if (index < path.length - 1) {
+                  const subList = navItem.nextElementSibling;
+                  if (subList && subList.tagName === "UL") {
+                    subList.classList.remove("hidden");
+                    const toggleIcon = navItem.querySelector(".transform");
+                    if (toggleIcon) {
+                      toggleIcon.classList.add("rotate-90");
+                    }
+                  }
+                }
+              }
+            });
+          });
+        }
       }
 
       // Show a message when no search results are found
@@ -1662,7 +1890,7 @@
         const mobileNavigation = document.getElementById("mobile-navigation");
 
         // Clone desktop navigation items to mobile
-        function updateMobileNavigation() {
+        function updateMobileNavigation(path = []) {
           if (!mobileNavigation) return;
 
           // Clear existing content
@@ -1674,7 +1902,7 @@
           mobileNavigation.appendChild(rootList);
 
           // Get the bookmark data
-          const bookmarkData = window.marksForestData;
+          const bookmarkData = state.bookmarkData; // 使用 state 中的数据而不是 window 对象
           if (!bookmarkData || !Array.isArray(bookmarkData)) {
             mobileNavigation.innerHTML =
               '<div class="text-center p-4 text-gray-500">No bookmarks available</div>';
@@ -1684,28 +1912,55 @@
           // Render the navigation tree
           renderNavigation(bookmarkData, rootList, true);
 
-          // Expand the first folder
-          const firstFolder = rootList.querySelector(".nav-item");
-          if (firstFolder) {
-            const subList = firstFolder.nextElementSibling;
-            if (subList && subList.tagName === "UL") {
-              subList.classList.remove("hidden");
-              const toggleIcon = firstFolder.querySelector(".transform");
-              if (toggleIcon) {
-                toggleIcon.classList.add("rotate-90");
+          // 同步当前路径的激活状态
+          if (path && path.length > 0) {
+            // 展开路径上的所有文件夹
+            path.forEach((item, index) => {
+              const items = rootList.querySelectorAll("li");
+              items.forEach((navItem) => {
+                const navLink = navItem.querySelector("a");
+                if (navLink && navLink.innerText === item.title) {
+                  if (index === path.length - 1) {
+                    navItem.classList.add("sidebar-active");
+                  }
+                  const subList = navItem.nextElementSibling;
+                  if (subList && subList.tagName === "UL") {
+                    subList.classList.remove("hidden");
+                    const toggleIcon = navItem.querySelector(".transform");
+                    if (toggleIcon) {
+                      toggleIcon.classList.add("rotate-90");
+                    }
+                  }
+                }
+              });
+            });
+          } else {
+            // 如果没有路径，展开第一个文件夹
+            const firstFolder = rootList.querySelector(".nav-item");
+            if (firstFolder) {
+              const subList = firstFolder.nextElementSibling;
+              if (subList && subList.tagName === "UL") {
+                subList.classList.remove("hidden");
+                const toggleIcon = firstFolder.querySelector(".transform");
+                if (toggleIcon) {
+                  toggleIcon.classList.add("rotate-90");
+                }
               }
             }
           }
         }
 
-        // Initial update
-        updateMobileNavigation();
+        // 监听数据加载完成事件
+        window.addEventListener("marksforest-data-loaded", (event) => {
+          const path = event.detail ? event.detail.path : [];
+          updateMobileNavigation(path);
+        });
 
-        // Update mobile navigation when data changes
-        window.addEventListener(
-          "marksforest-data-updated",
-          updateMobileNavigation
-        );
+        // 监听路径变化事件
+        window.addEventListener("marksforest-path-updated", (event) => {
+          const path = event.detail ? event.detail.path : [];
+          updateMobileNavigation(path);
+        });
       }
 
       // Initialize mobile navigation after data is loaded
