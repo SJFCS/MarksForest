@@ -1114,9 +1114,9 @@
         };
 
         // 尝试加载远程图标
-        //remoteIcon.src = `https://favicon.im/${new URL(url).hostname}?larger=true`; //效果不好
-        remoteIcon.src = `https://logo.clearbit.com/${new URL(url).hostname}`;
-        //remoteIcon.src = `https://www.google.com/s2/favicons?domain=${new URL(url).hostname}&sz=128`;
+        // remoteIcon.src = `https://favicon.im/${new URL(url).hostname}?larger=true`; //效果不好
+        // remoteIcon.src = `https://logo.clearbit.com/${new URL(url).hostname}`; //废弃 api
+        remoteIcon.src = `https://www.google.com/s2/favicons?domain=${new URL(url).hostname}&sz=128`;
         // 远程图标加载失败时保持默认图标
         remoteIcon.onerror = function () {
           cardIcon.src = "assets/default-icon.svg";
